@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Fira+Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lighklife.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.5","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":3,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="从明文通信到对称加密 非对称加密（公钥加密） 混合密码系统 单向散列函数——文件被修改了吗？ 消息认证码——消息是伪装者发的吗？ 数字签名——消息到底是谁写的 证书——公钥合法了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="密码技术总结">
+<meta property="og:url" content="https://lighklife.github.io/2018/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E7%BB%98%E6%80%BB/index.html">
+<meta property="og:site_name" content="LighkLife Blog">
+<meta property="og:description" content="从明文通信到对称加密 非对称加密（公钥加密） 混合密码系统 单向散列函数——文件被修改了吗？ 消息认证码——消息是伪装者发的吗？ 数字签名——消息到底是谁写的 证书——公钥合法了">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E6%9C%AA%E5%8A%A0%E5%AF%86%E7%9A%84%E5%8D%B1%E9%99%A9.png">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3983351-1da3a5ef1c198468.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3983351-1fcc70aec5f4f862.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E5%9B%BE%E7%A4%BA.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E5%8A%A0%E5%AF%86%E4%B9%8B%E5%90%8E%E7%9A%84%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-1-%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%9A%84%E7%BC%BA%E9%99%B7.PNG">
+<meta property="og:image" content="http://lighklife.github.io/img/2017/Diffie-Hellman.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E5%85%AC%E9%92%A5%E5%8A%A0%E5%AF%86%E6%A0%B7%E5%BC%8F.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E5%85%AC%E9%92%A5%E5%8A%A0%E5%AF%86.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2017/RSA%E7%9A%84%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86.jpg">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E6%B7%B7%E5%90%88%E5%8A%A0%E5%AF%86.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81%E8%A7%A3%E5%AF%86.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E7%A1%AE%E8%AE%A4%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%8C%E6%95%B4%E6%80%A7.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0%E7%A1%AE%E4%BF%9D%E6%96%87%E4%BB%B6%E4%B8%80%E8%87%B4%E6%80%A7.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E6%95%A3%E5%88%97%E5%80%BC%E9%95%BF%E5%BA%A6%E5%9B%BA%E5%AE%9A.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2017/hash%E4%B8%8EMAC.jpg">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81%E7%A0%81.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E9%87%8D%E6%94%BE%E6%94%BB%E5%87%BB.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2018/2018-3-%E7%AD%BE%E5%90%8D%E6%97%B6%E9%97%B4%E5%9B%BE.png">
+<meta property="article:published_time" content="2018-07-06T17:26:57.000Z">
+<meta property="article:modified_time" content="2020-08-08T16:26:04.362Z">
+<meta property="article:author" content="lighkLife">
+<meta property="article:tag" content="加密码技术">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lighklife.github.io/img/2018/2018-3-%E6%9C%AA%E5%8A%A0%E5%AF%86%E7%9A%84%E5%8D%B1%E9%99%A9.png">
+
+<link rel="canonical" href="https://lighklife.github.io/2018/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E7%BB%98%E6%80%BB/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>密码技术总结 | LighkLife Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">LighkLife Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Code Dream</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E6%98%8E%E6%96%87%E9%80%9A%E4%BF%A1%E5%88%B0%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="nav-number">1.</span> <span class="nav-text"> 从明文通信到对称加密</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%8E%E6%96%87%E9%80%9A%E4%BF%A1"><span class="nav-number">1.1.</span> <span class="nav-text"> 明文通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E5%8A%A0%E5%AF%86"><span class="nav-number">1.2.</span> <span class="nav-text"> 开始加密</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%AF%E6%92%92%E5%AF%86%E7%A0%81%E5%AD%97%E6%AF%8D%E4%BB%A3%E6%8D%A2"><span class="nav-number">1.2.1.</span> <span class="nav-text"> 凯撒密码（字母代换）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E6%9B%BF%E6%8D%A2%E5%AF%86%E7%A0%81"><span class="nav-number">1.2.2.</span> <span class="nav-text"> 简单替换密码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E7%A7%B0%E5%AF%86%E7%A0%81%E6%A0%87%E5%87%86"><span class="nav-number">1.2.3.</span> <span class="nav-text"> 对称密码标准</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="nav-number">1.3.</span> <span class="nav-text"> 对称加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E7%A7%98%E9%92%A5%E9%85%8D%E9%80%81"><span class="nav-number">1.4.</span> <span class="nav-text"> 解决秘钥配送</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E5%85%AC%E9%92%A5%E5%8A%A0%E5%AF%86"><span class="nav-number">2.</span> <span class="nav-text"> 非对称加密（公钥加密）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0"><span class="nav-number">2.1.</span> <span class="nav-text"> 简述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E9%92%A5%E7%AE%97%E6%B3%95rsa"><span class="nav-number">2.2.</span> <span class="nav-text"> 公钥算法——RSA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%BA%E9%99%B7"><span class="nav-number">2.3.</span> <span class="nav-text"> 缺陷</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81%E7%B3%BB%E7%BB%9F"><span class="nav-number">3.</span> <span class="nav-text"> 混合密码系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E5%AF%86"><span class="nav-number">3.1.</span> <span class="nav-text"> 加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%AF%86"><span class="nav-number">3.2.</span> <span class="nav-text"> 解密</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0%E6%96%87%E4%BB%B6%E8%A2%AB%E4%BF%AE%E6%94%B9%E4%BA%86%E5%90%97"><span class="nav-number">4.</span> <span class="nav-text"> 单向散列函数——文件被修改了吗？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">4.1.</span> <span class="nav-text"> 概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">4.2.</span> <span class="nav-text"> </span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%B4%A8"><span class="nav-number">4.3.</span> <span class="nav-text"> 性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BE%E4%BE%8B"><span class="nav-number">4.4.</span> <span class="nav-text"> 举例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#md5"><span class="nav-number">4.4.1.</span> <span class="nav-text"> MD5</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sha-123-secure-hash-algorithm"><span class="nav-number">4.4.2.</span> <span class="nav-text"> SHA-1&#x2F;2&#x2F;3 (Secure Hash Algorithm)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%83%BD%E8%A7%A3%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">4.5.</span> <span class="nav-text"> 不能解的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81%E7%A0%81%E6%B6%88%E6%81%AF%E6%98%AF%E4%BC%AA%E8%A3%85%E8%80%85%E5%8F%91%E7%9A%84%E5%90%97"><span class="nav-number">5.</span> <span class="nav-text"> 消息认证码——消息是伪装者发的吗？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E6%B3%95%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">5.1.</span> <span class="nav-text"> 无法解决的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E6%B6%88%E6%81%AF%E5%88%B0%E5%BA%95%E6%98%AF%E8%B0%81%E5%86%99%E7%9A%84"><span class="nav-number">6.</span> <span class="nav-text"> 数字签名——消息到底是谁写的</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-2"><span class="nav-number">6.1.</span> <span class="nav-text"> 概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E4%B8%BE%E4%BE%8B"><span class="nav-number">6.2.</span> <span class="nav-text"> 应用举例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E6%B3%95%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98-2"><span class="nav-number">6.3.</span> <span class="nav-text"> 无法解决的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%81%E4%B9%A6%E5%85%AC%E9%92%A5%E5%90%88%E6%B3%95%E4%BA%86"><span class="nav-number">7.</span> <span class="nav-text"> 证书——公钥合法了</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="lighkLife"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">lighkLife</p>
+  <div class="site-description" itemprop="description">做个，有点意思的，人</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lighklife" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lighklife" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </section>
+        <div class="back-to-top animated">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lighklife.github.io/2018/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E7%BB%98%E6%80%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="lighkLife">
+      <meta itemprop="description" content="做个，有点意思的，人">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LighkLife Blog">
+    </span>
+
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          密码技术总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-07 01:26:57" itemprop="dateCreated datePublished" datetime="2018-07-07T01:26:57+08:00">2018-07-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-09 00:26:04" itemprop="dateModified" datetime="2020-08-09T00:26:04+08:00">2020-08-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">信息安全</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E7%BB%98%E6%80%BB/" class="post-meta-item leancloud_visitors" data-flag-title="密码技术总结" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2018/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E7%BB%98%E6%80%BB/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/密码技术绘总/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <ol>
+<li>从明文通信到对称加密</li>
+<li>非对称加密（公钥加密）</li>
+<li>混合密码系统</li>
+<li>单向散列函数——文件被修改了吗？</li>
+<li>消息认证码——消息是伪装者发的吗？</li>
+<li>数字签名——消息到底是谁写的</li>
+<li>证书——公钥合法了</li>
+</ol>
+<a id="more"></a>
+<h2 id="从明文通信到对称加密"><a class="markdownIt-Anchor" href="#从明文通信到对称加密"></a> 从明文通信到对称加密</h2>
+<h3 id="明文通信"><a class="markdownIt-Anchor" href="#明文通信"></a> 明文通信</h3>
+<p>为什么要加密呢？不妨先看看明文通信</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E6%9C%AA%E5%8A%A0%E5%AF%86%E7%9A%84%E5%8D%B1%E9%99%A9.png" alt="未加密的危险" /></p>
+<p>Eve 可以直接窃听到Alice与Bob的通信过程，通过抓包就可以查看到通信内容，如果邮件内容是羞答答的，怎么可以被其他人看到呢？（邪魅微笑）</p>
+<p>在逼格满满的咖啡厅，你正在愉快的刷着微博，逛着知乎，浏览豆瓣，你以为你连着免费WiFi爽歪歪，</p>
+<p>图，喝咖啡，玩手机</p>
+<p>然后其实被他笔记本造的WiFi，</p>
+<p>图，黑客</p>
+<p>顺便一提，关于抓包，现成的抓包工具很多，如 <a target="_blank" rel="noopener" href="https://www.wireshark.org/">wireshark</a>，<a target="_blank" rel="noopener" href="https://www.charlesproxy.com/">charles</a> 等，这里有一篇使用charles抓APP包的文章，要不要 <a href="https://lighklife.github.io/2017/08/15/2017/Https%E6%8A%93%E5%8C%85/">看看</a></p>
+<h3 id="开始加密"><a class="markdownIt-Anchor" href="#开始加密"></a> 开始加密</h3>
+<h4 id="凯撒密码字母代换"><a class="markdownIt-Anchor" href="#凯撒密码字母代换"></a> 凯撒密码（字母代换）</h4>
+<p><img src="http://upload-images.jianshu.io/upload_images/3983351-1da3a5ef1c198468.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="凯撒密码.jpg" /></p>
+<p>将一个字母表向指定方向平移N位，解密反之，N为密钥 。</p>
+<blockquote>
+<p>密钥只可能是0-25共26个，用1-25每个数作为密钥尝试解密，很容易发现明文，从而得出密钥是几。（暴力破解）</p>
+</blockquote>
+<h4 id="简单替换密码"><a class="markdownIt-Anchor" href="#简单替换密码"></a> 简单替换密码</h4>
+<p><img src="http://upload-images.jianshu.io/upload_images/3983351-1fcc70aec5f4f862.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="简单替换密码.jpg" /></p>
+<p>两个字母表中字母之间随机一一对应， 密钥是替换表。</p>
+<blockquote>
+<p>密钥空间是 26！= 2^88。所以考虑使用（频率破解）。</p>
+</blockquote>
+<h4 id="对称密码标准"><a class="markdownIt-Anchor" href="#对称密码标准"></a> 对称密码标准</h4>
+<ul>
+<li>DES（Data Encryption Standard）（不再推荐）</li>
+<li>AES（Advanced Encryption Standard） （应该使用）</li>
+</ul>
+<p><code>AES</code> 目前采用的是<code>Rijndael</code> 算法，<code>Rijndael</code> 的分组长度可以是以32bit为单位在128到256范围内选择。目前AES 规定分组长度只能有128,192,256三种。</p>
+<p>AES 一轮的步骤：</p>
+<ul>
+<li>加密：SubBytes —&gt; ShiftRows —&gt; MixColumns —&gt; AddRoundKey</li>
+<li>解密：AddRoundKey —&gt; InvMixColumns —&gt; InvShiftRows —&gt; InvSubBytes</li>
+</ul>
+<p>其中步骤的含义为：</p>
+<ol>
+<li>SubBytes： 每个字节的值（0-255的任意值）为索引，从一张拥有256个值的替换表（S-Box）中查找对应的值处理。将一个1字节的值替换成另一个1字节的值。</li>
+<li>ShiftRows：将4个字节为单位的行（Row）按照一定的规则左平移。</li>
+<li>MixColumns：将一个4字节的值进行比特运算，变成另一个4字节的值。</li>
+<li>AddRoundKey ：将MixColumns的输出与轮密钥XOR。</li>
+</ol>
+<h3 id="对称加密"><a class="markdownIt-Anchor" href="#对称加密"></a> 对称加密</h3>
+<p>Alice 和 Bob 使用相同的秘钥来加解密消息，也就是<strong>对称加密</strong>，上面提到的加密算法都是对称加密。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E5%9B%BE%E7%A4%BA.png" alt="对称加密图示" /></p>
+<p>这样，即使第三者 Eve 窃听到通信过程，那么 Eve 也只能看到奇奇怪怪符号组成的密文</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E5%8A%A0%E5%AF%86%E4%B9%8B%E5%90%8E%E7%9A%84%E6%83%85%E5%86%B5.png" alt="加密之后的情况" /></p>
+<p>这样Alice和Bob就可以放心的互相通信了吗？对啊！当然不是，这只是解决了机密性的问题，对称加密的密钥需要被发送给对方，对方才能解密，但直接发送，秘钥也会被窃听，这就是秘钥配送问题。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-1-%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%9A%84%E7%BC%BA%E9%99%B7.PNG" alt="存在的缺陷" /></p>
+<h3 id="解决秘钥配送"><a class="markdownIt-Anchor" href="#解决秘钥配送"></a> 解决秘钥配送</h3>
+<ul>
+<li>事先当面将秘钥给对方，不通过网络传输秘钥，避免了被窃听的机会；</li>
+<li>通过密钥分配中心解决；</li>
+<li>通过 Diffie-Hellman 密钥交换来解决；</li>
+<li>通过公钥密码来解决。</li>
+</ul>
+<p><img src="http://lighklife.github.io/img/2017/Diffie-Hellman.png" alt="Diffie-Hellman" /></p>
+<h2 id="非对称加密公钥加密"><a class="markdownIt-Anchor" href="#非对称加密公钥加密"></a> 非对称加密（公钥加密）</h2>
+<h3 id="简述"><a class="markdownIt-Anchor" href="#简述"></a> 简述</h3>
+<p>公钥加密又叫非对称加密，这类加密算法中存一对秘钥：</p>
+<ul>
+<li>公钥——用来加密信息，公开给任何人</li>
+<li>私钥——用来解密信息，自己私藏</li>
+</ul>
+<p>公钥和私钥匙是天生一对，一个确定的公钥加密的信息，只有他的私钥才能解密信息。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E5%85%AC%E9%92%A5%E5%8A%A0%E5%AF%86%E6%A0%B7%E5%BC%8F.png" alt="公钥加密样式" /></p>
+<p>使用公钥加密对信息进行加密通信的流程如下：</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E5%85%AC%E9%92%A5%E5%8A%A0%E5%AF%86.png" alt="公钥加密" /></p>
+<h3 id="公钥算法rsa"><a class="markdownIt-Anchor" href="#公钥算法rsa"></a> 公钥算法——RSA</h3>
+<p>RSA是一种非对称加密算法，是1977年由<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%BD%97%E7%BA%B3%E5%BE%B7%C2%B7%E6%9D%8E%E7%BB%B4%E6%96%AF%E7%89%B9">罗纳德·李维斯特</a>（Ron Rivest）、<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E9%98%BF%E8%BF%AA%C2%B7%E8%90%A8%E8%8E%AB%E5%B0%94">阿迪·萨莫尔</a>（Adi Shamir）和<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E4%BC%A6%E7%BA%B3%E5%BE%B7%C2%B7%E9%98%BF%E5%BE%B7%E6%9B%BC">伦纳德·阿德曼</a>（Leonard Adleman）一起提出的，并以他们名字的首字母命名。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">name</th>
+<th style="text-align:left">VALUE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>秘钥</strong></td>
+<td style="text-align:left">数 E 和 数 N</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>秘钥</strong></td>
+<td style="text-align:left">数 D 和 数 N</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>加密过程</strong></td>
+<td style="text-align:left">$$ 密文 = (明文^E) mod(N )$$</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>解密过程</strong></td>
+<td style="text-align:left">$$ 明文 = (密文^D) mod (N )$$</td>
+</tr>
+</tbody>
+</table>
+<p><img src="http://lighklife.github.io/img/2017/RSA%E7%9A%84%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86.jpg" alt="RSA加密" /><br />
+原理详情：</p>
+<p><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html">阮一峰的网络日志——RSA算法原理（一）</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html">阮一峰的网络日志——RSA算法原理（二）</a></p>
+<h3 id="缺陷"><a class="markdownIt-Anchor" href="#缺陷"></a> 缺陷</h3>
+<p>加密运算强度大，费时间，比如RSA加密过程是对明文求指数运算后再取模，这显然比AES运算量要大。有何优化方案吗？有，结合对称加密与公钥加密。</p>
+<h2 id="混合密码系统"><a class="markdownIt-Anchor" href="#混合密码系统"></a> 混合密码系统</h2>
+<h3 id="加密"><a class="markdownIt-Anchor" href="#加密"></a> 加密</h3>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E6%B7%B7%E5%90%88%E5%8A%A0%E5%AF%86.png" alt="混合加密" /></p>
+<h3 id="解密"><a class="markdownIt-Anchor" href="#解密"></a> 解密</h3>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81%E8%A7%A3%E5%AF%86.png" alt="混合密码解密" /></p>
+<h2 id="单向散列函数文件被修改了吗"><a class="markdownIt-Anchor" href="#单向散列函数文件被修改了吗"></a> 单向散列函数——文件被修改了吗？</h2>
+<h3 id="概述"><a class="markdownIt-Anchor" href="#概述"></a> 概述</h3>
+<p>网络下载软件，或者传输文件，如何验证没有被第三方篡改呢？即是数据的的<strong>完整性</strong>（intergrity），也称<strong>一致性</strong>。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E7%A1%AE%E8%AE%A4%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%8C%E6%95%B4%E6%80%A7.png" alt="确认文件的完整性" /></p>
+<h3 id=""><a class="markdownIt-Anchor" href="#"></a> </h3>
+<p>单项散列函数就是生成文件“指纹”的方法。单项散列函数也称为消息摘要函数(<code>message digest function</code>)，哈希函数，杂凑函数。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0%E7%A1%AE%E4%BF%9D%E6%96%87%E4%BB%B6%E4%B8%80%E8%87%B4%E6%80%A7.png" alt="单向散列函数确保文件一致性" /></p>
+<h3 id="性质"><a class="markdownIt-Anchor" href="#性质"></a> 性质</h3>
+<ol>
+<li>根据任意长度的消息计算出固定长度的散列值。</li>
+<li>能快速计算出散列值。</li>
+<li>抗碰撞性，消息不同，散列值也不同。</li>
+<li>具备单向性,根据散列值无法计算出消息。</li>
+</ol>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E6%95%A3%E5%88%97%E5%80%BC%E9%95%BF%E5%BA%A6%E5%9B%BA%E5%AE%9A.png" alt="散列值长度固定" /></p>
+<h3 id="举例"><a class="markdownIt-Anchor" href="#举例"></a> 举例</h3>
+<h4 id="md5"><a class="markdownIt-Anchor" href="#md5"></a> MD5</h4>
+<p>MD5(Message Digest)：一般128位的MD5散列被表示为32位十六进制数字，例如</p>
+<p><code>9e107d9d372bb6826bd81d3542a419d6 = MD5(&quot;The quick brown fox jumps over the lazy dog&quot;);</code></p>
+<p>其强抗碰撞性已经被攻破，已经不再安全。</p>
+<h4 id="sha-123-secure-hash-algorithm"><a class="markdownIt-Anchor" href="#sha-123-secure-hash-algorithm"></a> SHA-1/2/3 (Secure Hash Algorithm)</h4>
+<p>sha1: 已经被列为“可谨慎运用的密码清单”，为了保持兼容性才使用；其强抗碰撞性已经 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/56234281">被攻破</a>。</p>
+<p>sha2：由 SHA-256 和 SHA-512衍生出6种版本，显然鉴于内部状态，SHA-256系列更适合32位CPU。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>输出长度</th>
+<th>内部状态长度</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SHA-224</td>
+<td>224</td>
+<td>32 * 8 = 256</td>
+<td>将SHA-256的结果截掉32比特</td>
+</tr>
+<tr>
+<td>SHA-256</td>
+<td>256</td>
+<td>32 * 8 = 256</td>
+<td></td>
+</tr>
+<tr>
+<td>SHA-521/224</td>
+<td>224</td>
+<td>64 * 8 = 512</td>
+<td>将SHA-512的结果截掉288比特</td>
+</tr>
+<tr>
+<td>SHA-512/256</td>
+<td>256</td>
+<td>64 * 8 = 512</td>
+<td>将SHA-512的结果截掉256比特</td>
+</tr>
+<tr>
+<td>SHA-384</td>
+<td>384</td>
+<td>64 * 8 = 512</td>
+<td>将SHA-512的结果截掉128比特</td>
+</tr>
+<tr>
+<td>SHA-512</td>
+<td>512</td>
+<td>64 * 8 = 512</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>sha3：2012年选拔出名为Keccak的算法作为sha3，结构完全不同sha-2，适用各种设备，硬件上实现性能高，更安全。</p>
+<h3 id="不能解的问题"><a class="markdownIt-Anchor" href="#不能解的问题"></a> 不能解的问题</h3>
+<p>使用单向散列函数能实现完整性的检察，但是有些如果主动攻击者Mallory伪装成Alice，向Bob同时发送了消息和散列值。这时Bob能通过单向散列函数检察消息的完整性，但是却没能识别出这条消息是Mallory<strong>伪装</strong>成Bob发送的，无法被认证。</p>
+<h2 id="消息认证码消息是伪装者发的吗"><a class="markdownIt-Anchor" href="#消息认证码消息是伪装者发的吗"></a> 消息认证码——消息是伪装者发的吗？</h2>
+<p>消息认证码（Message Authentication Code） 是一种与密钥相关联的单项散列函数。</p>
+<p><img src="http://lighklife.github.io/img/2017/hash%E4%B8%8EMAC.jpg" alt="hash与MAC" /></p>
+<ul>
+<li>
+<p>要计算MAC值必须持有共享密钥，MAC正是利用这一性质确认完整性的。</p>
+</li>
+<li>
+<p>只有通信双方才能持有共享密钥，密钥配送问题可以使用公钥密码，Diffie-Hellman密钥交换，密钥分配中心等来解决。</p>
+</li>
+</ul>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81%E7%A0%81.png" alt="消息认证码" /></p>
+<h3 id="无法解决的问题"><a class="markdownIt-Anchor" href="#无法解决的问题"></a> 无法解决的问题</h3>
+<p>重放攻击</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E9%87%8D%E6%94%BE%E6%94%BB%E5%87%BB.png" alt="重放攻击" /></p>
+<p>消息认证码解决了完整性与伪装问题，仍然无法解决“对第三方证明”和“防否认”问题。这就需要数字签名来解决。</p>
+<h2 id="数字签名消息到底是谁写的"><a class="markdownIt-Anchor" href="#数字签名消息到底是谁写的"></a> 数字签名——消息到底是谁写的</h2>
+<h3 id="概述-2"><a class="markdownIt-Anchor" href="#概述-2"></a> 概述</h3>
+<p>设想要防否认，只要签名只能由消息发送者生产就OK了。</p>
+<p>数字签名对签名者的秘钥和验证者的秘钥进行了区分，使用验证签名无法生产签名。签名秘钥只由签名者持有。</p>
+<p>这和公钥密码有点相似了。事实上，签名就是公钥密码“反过来”实现的。<br />
+对于消息签名，速度太慢，因为每个消息的散列值是不一样的，所以一般只需要对消息的散列值进行签名就可以了。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E7%AD%BE%E5%90%8D%E6%97%B6%E9%97%B4%E5%9B%BE.png" alt="签名时间图" /></p>
+<h3 id="应用举例"><a class="markdownIt-Anchor" href="#应用举例"></a> 应用举例</h3>
+<ol>
+<li>信息安全公告。</li>
+<li>软件下载。</li>
+<li>公钥证书。(得到合法的公钥)</li>
+<li>SSL/TLS。</li>
+</ol>
+<h3 id="无法解决的问题-2"><a class="markdownIt-Anchor" href="#无法解决的问题-2"></a> 无法解决的问题</h3>
+<p>通过对散列值签名我们可以解决完整性，篡改，伪造问题，但是用于验证签名的公钥是否是真正的发送者的呢？中间人可以用自己的私钥签名，并把自己的公钥发送给接受者。<br />
+为验证公钥是否合法，我们需要使用证书。</p>
+<h2 id="证书公钥合法了"><a class="markdownIt-Anchor" href="#证书公钥合法了"></a> 证书——公钥合法了</h2>
+<p>证书就是我们信任的第三方对发送者的公钥加上了他们的数字签名。相当于身份证一样的东西。这里的第三方包括例如赛门铁客等机构，也可以是自己组织内部成立的一个机构。</p>
+<p>证书主要包含：</p>
+<ol>
+<li>证书序号。</li>
+<li>证书颁发机构。</li>
+<li>公钥所有者。</li>
+<li>SHA-1 指纹。</li>
+<li>MD５指纹。</li>
+<li>证书ID。</li>
+<li>有效期起始时间。</li>
+<li>有效期结束时间。</li>
+<li>散列算法。</li>
+<li>秘钥ID。</li>
+<li>秘钥用途。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8A%A0%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF/" rel="tag"># 加密码技术</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/%20Madonna's-VMAs-Speech-Dedicated-to-Michael-Jackson/" rel="prev" title="Madonna's-VMAs-Speech-Dedicated-to-Michael-Jackson">
+      <i class="fa fa-chevron-left"></i> Madonna's-VMAs-Speech-Dedicated-to-Michael-Jackson
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/%E4%BD%BF%E7%94%A8%20Elastic%20Stack%20%E8%BF%9B%E8%A1%8C%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E5%88%86%E6%9E%90/" rel="next" title="使用 Elastic Stack 进行日志收集与分析">
+      使用 Elastic Stack 进行日志收集与分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lighkLife</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"yShF1u7c07g9bcPTKfh8AQxu-gzGzoHsz","app_key":"dvlDDT3XUXRHTpqxedBCIyyL","server_url":null,"security":false};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.init({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    }, '.mermaid');
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://http-lighklife-github-io-1.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://lighklife.github.io/2018/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E7%BB%98%E6%80%BB/";
+    this.page.identifier = "2018/密码技术绘总/";
+    this.page.title = "密码技术总结";
+    };
+  NexT.utils.loadComments('#disqus_thread', () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-lighklife-github-io-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

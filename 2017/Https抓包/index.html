@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Fira+Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lighklife.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.5","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":3,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="启动远程SSL代理 按照提示将设置手机代理，并安装证书  选择手机所连接的wifi，长按弹出修改框，选择 Manual 手动，输入Charles提示的代理IP与端口 此过程中Charles会询问是否信任，选择Allow 浏览器输入Charles提示的网址 chls.pro&#x2F;ssl, 安装证书   Charles SSL 代理设置 重启 Charles，可以看到已经可以看到解密后的Https传输">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Https抓包">
+<meta property="og:url" content="https://lighklife.github.io/2017/Https%E6%8A%93%E5%8C%85/index.html">
+<meta property="og:site_name" content="LighkLife Blog">
+<meta property="og:description" content="启动远程SSL代理 按照提示将设置手机代理，并安装证书  选择手机所连接的wifi，长按弹出修改框，选择 Manual 手动，输入Charles提示的代理IP与端口 此过程中Charles会询问是否信任，选择Allow 浏览器输入Charles提示的网址 chls.pro&#x2F;ssl, 安装证书   Charles SSL 代理设置 重启 Charles，可以看到已经可以看到解密后的Https传输">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lighklife.github.io/img/2017/Selection_010.png">
+<meta property="og:image" content="http://lighklife.github.io/img/2017/Selection_011.png">
+<meta property="article:published_time" content="2017-08-15T15:26:03.000Z">
+<meta property="article:modified_time" content="2020-08-08T16:23:25.262Z">
+<meta property="article:author" content="lighkLife">
+<meta property="article:tag" content="信息安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lighklife.github.io/img/2017/Selection_010.png">
+
+<link rel="canonical" href="https://lighklife.github.io/2017/Https%E6%8A%93%E5%8C%85/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Https抓包 | LighkLife Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">LighkLife Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Code Dream</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E8%BF%9C%E7%A8%8Bssl%E4%BB%A3%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text"> 启动远程SSL代理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%89%E7%85%A7%E6%8F%90%E7%A4%BA%E5%B0%86%E8%AE%BE%E7%BD%AE%E6%89%8B%E6%9C%BA%E4%BB%A3%E7%90%86%E5%B9%B6%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6"><span class="nav-number">2.</span> <span class="nav-text"> 按照提示将设置手机代理，并安装证书</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E6%89%8B%E6%9C%BA%E6%89%80%E8%BF%9E%E6%8E%A5%E7%9A%84wifi%E9%95%BF%E6%8C%89%E5%BC%B9%E5%87%BA%E4%BF%AE%E6%94%B9%E6%A1%86%E9%80%89%E6%8B%A9-manual-%E6%89%8B%E5%8A%A8%E8%BE%93%E5%85%A5charles%E6%8F%90%E7%A4%BA%E7%9A%84%E4%BB%A3%E7%90%86ip%E4%B8%8E%E7%AB%AF%E5%8F%A3"><span class="nav-number">2.1.</span> <span class="nav-text"> 选择手机所连接的wifi，长按弹出修改框，选择 Manual 手动，输入Charles提示的代理IP与端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A4%E8%BF%87%E7%A8%8B%E4%B8%ADcharles%E4%BC%9A%E8%AF%A2%E9%97%AE%E6%98%AF%E5%90%A6%E4%BF%A1%E4%BB%BB%E9%80%89%E6%8B%A9allow"><span class="nav-number">2.2.</span> <span class="nav-text"> 此过程中Charles会询问是否信任，选择Allow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E8%BE%93%E5%85%A5charles%E6%8F%90%E7%A4%BA%E7%9A%84%E7%BD%91%E5%9D%80-chlsprossl-%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6"><span class="nav-number">2.3.</span> <span class="nav-text"> 浏览器输入Charles提示的网址 chls.pro&#x2F;ssl, 安装证书</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#charles-ssl-%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text"> Charles SSL 代理设置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%87%8D%E5%90%AF-charles%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E5%B7%B2%E7%BB%8F%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E8%A7%A3%E5%AF%86%E5%90%8E%E7%9A%84https%E4%BC%A0%E8%BE%93%E5%86%85%E5%AE%B9"><span class="nav-number">4.</span> <span class="nav-text"> 重启 Charles，可以看到已经可以看到解密后的Https传输内容</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="lighkLife"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">lighkLife</p>
+  <div class="site-description" itemprop="description">做个，有点意思的，人</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lighklife" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lighklife" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </section>
+        <div class="back-to-top animated">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lighklife.github.io/2017/Https%E6%8A%93%E5%8C%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="lighkLife">
+      <meta itemprop="description" content="做个，有点意思的，人">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LighkLife Blog">
+    </span>
+
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Https抓包
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-15 23:26:03" itemprop="dateCreated datePublished" datetime="2017-08-15T23:26:03+08:00">2017-08-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-09 00:23:25" itemprop="dateModified" datetime="2020-08-09T00:23:25+08:00">2020-08-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/Https%E6%8A%93%E5%8C%85/" class="post-meta-item leancloud_visitors" data-flag-title="Https抓包" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2017/Https%E6%8A%93%E5%8C%85/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/Https抓包/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<ul>
+<li><a href="#%E5%90%AF%E5%8A%A8%E8%BF%9C%E7%A8%8Bssl%E4%BB%A3%E7%90%86">启动远程SSL代理</a></li>
+<li><a href="#%E6%8C%89%E7%85%A7%E6%8F%90%E7%A4%BA%E5%B0%86%E8%AE%BE%E7%BD%AE%E6%89%8B%E6%9C%BA%E4%BB%A3%E7%90%86%E5%B9%B6%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6">按照提示将设置手机代理，并安装证书</a>
+<ul>
+<li><a href="#%E9%80%89%E6%8B%A9%E6%89%8B%E6%9C%BA%E6%89%80%E8%BF%9E%E6%8E%A5%E7%9A%84wifi%E9%95%BF%E6%8C%89%E5%BC%B9%E5%87%BA%E4%BF%AE%E6%94%B9%E6%A1%86%E9%80%89%E6%8B%A9-manual-%E6%89%8B%E5%8A%A8%E8%BE%93%E5%85%A5charles%E6%8F%90%E7%A4%BA%E7%9A%84%E4%BB%A3%E7%90%86ip%E4%B8%8E%E7%AB%AF%E5%8F%A3">选择手机所连接的wifi，长按弹出修改框，选择 <code>Manual</code> 手动，输入Charles提示的代理IP与端口</a></li>
+<li><a href="#%E6%AD%A4%E8%BF%87%E7%A8%8B%E4%B8%ADcharles%E4%BC%9A%E8%AF%A2%E9%97%AE%E6%98%AF%E5%90%A6%E4%BF%A1%E4%BB%BB%E9%80%89%E6%8B%A9allow">此过程中Charles会询问是否信任，选择Allow</a></li>
+<li><a href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E8%BE%93%E5%85%A5charles%E6%8F%90%E7%A4%BA%E7%9A%84%E7%BD%91%E5%9D%80-chlsprossl-%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6">浏览器输入Charles提示的网址 <code>chls.pro/ssl</code>, 安装证书</a></li>
+</ul>
+</li>
+<li><a href="#charles-ssl-%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE">Charles SSL 代理设置</a></li>
+<li><a href="#%E9%87%8D%E5%90%AF-charles%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E5%B7%B2%E7%BB%8F%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E8%A7%A3%E5%AF%86%E5%90%8E%E7%9A%84https%E4%BC%A0%E8%BE%93%E5%86%85%E5%AE%B9">重启 Charles，可以看到已经可以看到解密后的Https传输内容</a></li>
+</ul>
+<!-- /TOC -->
+<a id="more"></a>
+<h1 id="启动远程ssl代理"><a class="markdownIt-Anchor" href="#启动远程ssl代理"></a> 启动远程SSL代理</h1>
+<p>![Screenshot from 2017-08-15 11-15-43](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-15-43.png)</p>
+<h1 id="按照提示将设置手机代理并安装证书"><a class="markdownIt-Anchor" href="#按照提示将设置手机代理并安装证书"></a> 按照提示将设置手机代理，并安装证书</h1>
+<p>![Screenshot from 2017-08-15 11-22-04](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-22-04.png)</p>
+<h2 id="选择手机所连接的wifi长按弹出修改框选择-manual-手动输入charles提示的代理ip与端口"><a class="markdownIt-Anchor" href="#选择手机所连接的wifi长按弹出修改框选择-manual-手动输入charles提示的代理ip与端口"></a> 选择手机所连接的wifi，长按弹出修改框，选择 <code>Manual</code> 手动，输入Charles提示的代理IP与端口</h2>
+<p><img src="http://lighklife.github.io/img/2017/Selection_010.png" alt="Selection_010" /></p>
+<h2 id="此过程中charles会询问是否信任选择allow"><a class="markdownIt-Anchor" href="#此过程中charles会询问是否信任选择allow"></a> 此过程中Charles会询问是否信任，选择Allow</h2>
+<p>![Screenshot from 2017-08-15 11-23-56](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-23-56.png)</p>
+<h2 id="浏览器输入charles提示的网址-chlsprossl-安装证书"><a class="markdownIt-Anchor" href="#浏览器输入charles提示的网址-chlsprossl-安装证书"></a> 浏览器输入Charles提示的网址 <code>chls.pro/ssl</code>, 安装证书</h2>
+<p><img src="http://lighklife.github.io/img/2017/Selection_011.png" alt="Selection_011" /></p>
+<h1 id="charles-ssl-代理设置"><a class="markdownIt-Anchor" href="#charles-ssl-代理设置"></a> Charles SSL 代理设置</h1>
+<p>![Screenshot from 2017-08-15 11-18-05](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-18-05.png)</p>
+<p>![Screenshot from 2017-08-15 11-18-18](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-18-18.png)</p>
+<h1 id="重启-charles可以看到已经可以看到解密后的https传输内容"><a class="markdownIt-Anchor" href="#重启-charles可以看到已经可以看到解密后的https传输内容"></a> 重启 Charles，可以看到已经可以看到解密后的Https传输内容</h1>
+<p>![Screenshot from 2017-08-15 11-52-24](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-52-24.png)</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/" rel="tag"># 信息安全</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/mysql-note/" rel="prev" title="mysql维护笔记">
+      <i class="fa fa-chevron-left"></i> mysql维护笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/Lean-How-to-Learn(week-1-what%E2%80%98s-learning)/" rel="next" title="Lean-How-to-Learn(what‘s-learning)">
+      Lean-How-to-Learn(what‘s-learning) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lighkLife</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"yShF1u7c07g9bcPTKfh8AQxu-gzGzoHsz","app_key":"dvlDDT3XUXRHTpqxedBCIyyL","server_url":null,"security":false};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.init({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    }, '.mermaid');
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://http-lighklife-github-io-1.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://lighklife.github.io/2017/Https%E6%8A%93%E5%8C%85/";
+    this.page.identifier = "2017/Https抓包/";
+    this.page.title = "Https抓包";
+    };
+  NexT.utils.loadComments('#disqus_thread', () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-lighklife-github-io-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

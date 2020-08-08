@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Fira+Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lighklife.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.5","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":3,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="起因：主要是解决单表增删改查时，遇到字段比较多的表，写出的sql比较难维护，而且代码不够整洁。（就是因为有两个table都有一百个字段，很难维护） 特点便是操作可以使用简单实体，查询返回的结果集合也是简单实体。如下：   初始化，数据库连接与关闭 直接执行sql与获取游标 查询 修改数据 添加数据 删除数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python操作数据库封装">
+<meta property="og:url" content="https://lighklife.github.io/2017/python%E6%93%8D%E4%BD%9C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B0%81%E8%A3%85/index.html">
+<meta property="og:site_name" content="LighkLife Blog">
+<meta property="og:description" content="起因：主要是解决单表增删改查时，遇到字段比较多的表，写出的sql比较难维护，而且代码不够整洁。（就是因为有两个table都有一百个字段，很难维护） 特点便是操作可以使用简单实体，查询返回的结果集合也是简单实体。如下：   初始化，数据库连接与关闭 直接执行sql与获取游标 查询 修改数据 添加数据 删除数据">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-07-13T03:07:00.000Z">
+<meta property="article:modified_time" content="2020-08-08T16:25:01.870Z">
+<meta property="article:author" content="lighkLife">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lighklife.github.io/2017/python%E6%93%8D%E4%BD%9C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B0%81%E8%A3%85/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>python操作数据库封装 | LighkLife Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">LighkLife Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Code Dream</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E4%B8%8E%E5%85%B3%E9%97%AD"><span class="nav-number">1.</span> <span class="nav-text"> 初始化，数据库连接与关闭</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E6%89%A7%E8%A1%8Csql%E4%B8%8E%E8%8E%B7%E5%8F%96%E6%B8%B8%E6%A0%87"><span class="nav-number">2.</span> <span class="nav-text"> 直接执行sql与获取游标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2"><span class="nav-number">3.</span> <span class="nav-text"> 查询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E6%95%B0%E6%8D%AE"><span class="nav-number">4.</span> <span class="nav-text"> 修改数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%95%B0%E6%8D%AE"><span class="nav-number">5.</span> <span class="nav-text"> 添加数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE"><span class="nav-number">6.</span> <span class="nav-text"> 删除数据</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="lighkLife"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">lighkLife</p>
+  <div class="site-description" itemprop="description">做个，有点意思的，人</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lighklife" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lighklife" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </section>
+        <div class="back-to-top animated">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lighklife.github.io/2017/python%E6%93%8D%E4%BD%9C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B0%81%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="lighkLife">
+      <meta itemprop="description" content="做个，有点意思的，人">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LighkLife Blog">
+    </span>
+
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          python操作数据库封装
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-07-13 11:07:00" itemprop="dateCreated datePublished" datetime="2017-07-13T11:07:00+08:00">2017-07-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-09 00:25:01" itemprop="dateModified" datetime="2020-08-09T00:25:01+08:00">2020-08-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Language/" itemprop="url" rel="index"><span itemprop="name">Language</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/python%E6%93%8D%E4%BD%9C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B0%81%E8%A3%85/" class="post-meta-item leancloud_visitors" data-flag-title="python操作数据库封装" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2017/python%E6%93%8D%E4%BD%9C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B0%81%E8%A3%85/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/python操作数据库封装/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>起因：主要是解决<code>单表</code>增删改查时，遇到字段比较多的表，写出的sql比较难维护，而且代码不够整洁。（就是因为有两个table都有一百个字段，很难维护）<br />
+特点便是操作可以使用简单实体，查询返回的结果集合也是简单实体。如下：</p>
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<ul>
+<li><a href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E4%B8%8E%E5%85%B3%E9%97%AD">初始化，数据库连接与关闭</a></li>
+<li><a href="#%E7%9B%B4%E6%8E%A5%E6%89%A7%E8%A1%8Csql%E4%B8%8E%E8%8E%B7%E5%8F%96%E6%B8%B8%E6%A0%87">直接执行sql与获取游标</a></li>
+<li><a href="#%E6%9F%A5%E8%AF%A2">查询</a></li>
+<li><a href="#%E4%BF%AE%E6%94%B9%E6%95%B0%E6%8D%AE">修改数据</a></li>
+<li><a href="#%E6%B7%BB%E5%8A%A0%E6%95%B0%E6%8D%AE">添加数据</a></li>
+<li><a href="#%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE">删除数据</a></li>
+</ul>
+<!-- /TOC -->
+<a id="more"></a>
+<h1 id="初始化数据库连接与关闭"><a class="markdownIt-Anchor" href="#初始化数据库连接与关闭"></a> 初始化，数据库连接与关闭</h1>
+<p>这里使用PooledDB作为连接池， 通过<code>Tools.get_host_pwd()</code>可以获取不同运行环境需要连接数据库地址和密码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DB</span>(<span class="params">object</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self,db_name</span>):</span></span><br><span class="line">        host, pwd = Tools.get_host_pwd()</span><br><span class="line">        config = &#123;</span><br><span class="line">            <span class="string">&#x27;user&#x27;</span>: <span class="string">&#x27;root&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;password&#x27;</span>: pwd,</span><br><span class="line">            <span class="string">&#x27;host&#x27;</span>: host,</span><br><span class="line">            <span class="string">&#x27;port&#x27;</span>: <span class="number">3306</span>,</span><br><span class="line">            <span class="string">&#x27;database&#x27;</span>: db_name,</span><br><span class="line">            <span class="string">&#x27;charset&#x27;</span>: <span class="string">&#x27;utf8&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        self._pool = PooledDB(pymysql, mincached=<span class="number">4</span>, maxcached=<span class="number">10</span>, setsession=[<span class="string">&#x27;SET AUTOCOMMIT = 1&#x27;</span>], **config)</span><br><span class="line">        self._conn = self._pool.connection()</span><br><span class="line">        self._cur = self._conn.cursor()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">close_db</span>(<span class="params">self</span>):</span></span><br><span class="line">        self._cur.close()</span><br><span class="line">        self._conn.close()</span><br></pre></td></tr></table></figure>
+<h1 id="直接执行sql与获取游标"><a class="markdownIt-Anchor" href="#直接执行sql与获取游标"></a> 直接执行sql与获取游标</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">execute</span>(<span class="params">self, sql</span>):</span></span><br><span class="line">    <span class="keyword">return</span> self._cur.execute(sql)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_cur</span>(<span class="params">self</span>):</span></span><br><span class="line">    <span class="keyword">return</span> self._cur</span><br></pre></td></tr></table></figure>
+<h1 id="查询"><a class="markdownIt-Anchor" href="#查询"></a> 查询</h1>
+<p>这里添加了三种查询方式</p>
+<ul>
+<li>select 根据where刷选条件返回查询到的所有实体</li>
+<li>select_one 最多返回一个实体</li>
+<li>select_by_sql 使用自己编写的sql去查询</li>
+</ul>
+<p>这样单表查询就显得代码很整洁清晰，修改维护也更加方便</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    db = DB(<span class="string">&#x27;car_db&#x27;</span>)</span><br><span class="line">    brand = Brand()</span><br><span class="line">    brand.auto_brand_id = <span class="string">&#x27;35&#x27;</span></span><br><span class="line">    brand.letter = <span class="string">&#x27;M&#x27;</span></span><br><span class="line">    brand.brand_name = <span class="string">&#x27;--阿斯顿·马丁&#x27;</span></span><br><span class="line">    db_brand = db.select_one(<span class="string">&#x27;car_brand&#x27;</span>, where_model=brand)</span><br><span class="line">    print(brand.__dict__)</span><br></pre></td></tr></table></figure>
+<p>其中需要定义对应数据库表的实体</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Brand</span>(<span class="params">object</span>):</span></span><br><span class="line">    id = <span class="literal">None</span></span><br><span class="line">    auto_id = <span class="literal">None</span></span><br><span class="line">    auto_brand_id = <span class="literal">None</span></span><br><span class="line">    letter = <span class="literal">None</span></span><br><span class="line">    brand_name = <span class="literal">None</span></span><br><span class="line">    logo_url = <span class="literal">None</span></span><br><span class="line">    update_time = <span class="literal">None</span></span><br><span class="line">    country = <span class="literal">None</span></span><br><span class="line">    sort = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_field</span>(<span class="params">cls</span>):</span></span><br><span class="line">        <span class="keyword">return</span> [<span class="string">&#x27;id&#x27;</span>, <span class="string">&#x27;auto_brand_id&#x27;</span>, <span class="string">&#x27;letter&#x27;</span>, <span class="string">&#x27;brand_name&#x27;</span>, <span class="string">&#x27;logo_url&#x27;</span>,</span><br><span class="line">                <span class="string">&#x27;update_time&#x27;</span>, <span class="string">&#x27;country&#x27;</span>, <span class="string">&#x27;sort&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<p>这里将sql查询出来结果转成实体最关键的两部是</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">result = [dict((k, row[i]) <span class="keyword">for</span> i, k <span class="keyword">in</span> enumerate(fields)) <span class="keyword">for</span> row <span class="keyword">in</span> result]</span><br><span class="line"></span><br><span class="line">Tools.dict_to_model(data, where_model)</span><br></pre></td></tr></table></figure>
+<p>先将查询结果转成表<code>dict</code>，字段名对应其值，然后将dict转成实体，方法如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dict_to_model</span>(<span class="params">a_dict, model</span>):</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> isinstance(model, object):</span><br><span class="line">        logging.error(<span class="string">&quot;model 不是类&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">    instance = copy.deepcopy(model)</span><br><span class="line">    <span class="keyword">for</span> k, v <span class="keyword">in</span> a_dict.items():</span><br><span class="line">        instance.__setattr__(k, v)</span><br><span class="line">    <span class="keyword">return</span> instance</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">select</span>(<span class="params">self, table, where_model, fields=None</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    查询数据</span></span><br><span class="line"><span class="string">    :param table:</span></span><br><span class="line"><span class="string">    :param where_model: 查询条件，类型为要查询的model实例</span></span><br><span class="line"><span class="string">    :param fields: 可选，需要查出的model的字段列表，默认查询model所有字段，</span></span><br><span class="line"><span class="string">    :return: 满足条件的model的generator</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> fields <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        fields = where_model.get_field()</span><br><span class="line">    where = <span class="string">&#x27;1=1&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> where_model.__dict__:</span><br><span class="line">        where = <span class="string">&quot; and &quot;</span>.join([<span class="string">&quot;%s=&#x27;%s&#x27;&quot;</span> % (k, v) <span class="keyword">for</span> k, v <span class="keyword">in</span> where_model.__dict__.items()])</span><br><span class="line">    sql = <span class="string">&quot;select %s from %s where %s order by id&quot;</span> % (<span class="string">&quot;,&quot;</span>.join(fields), table, where)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        self._cur.execute(sql)</span><br><span class="line">        result = self._cur.fetchall()</span><br><span class="line">        <span class="keyword">if</span> result:</span><br><span class="line">            result = [dict((k, row[i]) <span class="keyword">for</span> i, k <span class="keyword">in</span> enumerate(fields)) <span class="keyword">for</span> row <span class="keyword">in</span> result]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result = []</span><br><span class="line">        <span class="keyword">for</span> data <span class="keyword">in</span> result:</span><br><span class="line">            <span class="keyword">yield</span> Tools.dict_to_model(data, where_model)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">select_by_sql</span>(<span class="params">self, model, sql</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    查询数据</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        self._cur.execute(sql)</span><br><span class="line">        result = self._cur.fetchall()</span><br><span class="line">        <span class="keyword">if</span> result:</span><br><span class="line">            fields = model.get_field()</span><br><span class="line">            result = [dict((k, row[i]) <span class="keyword">for</span> i, k <span class="keyword">in</span> enumerate(fields)) <span class="keyword">for</span> row <span class="keyword">in</span> result]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result = []</span><br><span class="line">        <span class="keyword">for</span> data <span class="keyword">in</span> result:</span><br><span class="line">            <span class="keyword">yield</span> Tools.dict_to_model(data, model)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">select_one</span>(<span class="params">self, table, where_model</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        查询数据</span></span><br><span class="line"><span class="string">        :param table:</span></span><br><span class="line"><span class="string">        :param where_model: 查询条件，类型为要查询的model实例</span></span><br><span class="line"><span class="string">        :return: 满足条件的model的generator</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">    fields = where_model.get_field()</span><br><span class="line">    where = <span class="string">&#x27;1=1&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> where_model.__dict__:</span><br><span class="line">        where = <span class="string">&quot; and &quot;</span>.join([<span class="string">&quot;%s=&#x27;%s&#x27;&quot;</span> % (k, v) <span class="keyword">for</span> k, v <span class="keyword">in</span> where_model.__dict__.items()])</span><br><span class="line">    sql = <span class="string">&quot;select %s from %s where %s order by id limit 1&quot;</span> % (<span class="string">&quot;,&quot;</span>.join(fields), table, where)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        self.execute(sql)</span><br><span class="line">        result = self._cur.fetchall()</span><br><span class="line">        <span class="keyword">if</span> result:</span><br><span class="line">            result = [dict((k, row[i]) <span class="keyword">for</span> i, k <span class="keyword">in</span> enumerate(fields)) <span class="keyword">for</span> row <span class="keyword">in</span> result]</span><br><span class="line">            <span class="keyword">return</span> Tools.dict_to_model(result[<span class="number">0</span>], where_model)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line"></span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br></pre></td></tr></table></figure>
+<h1 id="修改数据"><a class="markdownIt-Anchor" href="#修改数据"></a> 修改数据</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 更新数据</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update</span>(<span class="params">self, table, model, where_model</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    更新</span></span><br><span class="line"><span class="string">    :param table: 表名</span></span><br><span class="line"><span class="string">    :param model: 更新的实例</span></span><br><span class="line"><span class="string">    :param where_model: 条件，类型与model相同</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    where = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> where_model.__dict__:</span><br><span class="line">        where = <span class="string">&quot; and &quot;</span>.join([<span class="string">&quot;%s=&#x27;%s&#x27;&quot;</span> % (k, v) <span class="keyword">for</span> k, v <span class="keyword">in</span> where_model.__dict__.items()])</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        logging.error(<span class="string">&#x27;where_model 不能为空&#x27;</span>)</span><br><span class="line">    fields = model.__dict__</span><br><span class="line">    data = <span class="string">&quot;,&quot;</span>.join([<span class="string">&quot;%s=&#x27;%s&#x27;&quot;</span> % (k, v) <span class="keyword">for</span> k, v <span class="keyword">in</span> fields.items()])</span><br><span class="line">    sql = <span class="string">&#x27;update %s set %s where&#x27;</span> <span class="string">&#x27; %s &#x27;</span> % (table, data, where)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> self.execute(sql)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="添加数据"><a class="markdownIt-Anchor" href="#添加数据"></a> 添加数据</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">insert</span>(<span class="params">self, table, model</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    insert data into table</span></span><br><span class="line"><span class="string">    :param model:</span></span><br><span class="line"><span class="string">    :param table: table name</span></span><br><span class="line"><span class="string">    :return: The result of insert sql execute</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    data = model.__dict__</span><br><span class="line">    fields, values = [], []</span><br><span class="line">    <span class="keyword">for</span> k, v <span class="keyword">in</span> data.items():</span><br><span class="line">        fields.append(k)</span><br><span class="line">        values.append(<span class="string">&quot;&#x27;%s&#x27;&quot;</span> % v)</span><br><span class="line">    sql = <span class="string">&quot;insert into %s (%s) values (%s)&quot;</span> % (table, <span class="string">&quot;,&quot;</span>.join(fields), <span class="string">&quot;,&quot;</span>.join(values))</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> self.execute(sql)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br></pre></td></tr></table></figure>
+<h1 id="删除数据"><a class="markdownIt-Anchor" href="#删除数据"></a> 删除数据</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">delete</span>(<span class="params">self, table, where_model</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    delete rows from table with the condition where</span></span><br><span class="line"><span class="string">    :param table: table name (String)</span></span><br><span class="line"><span class="string">    :param where_model: condition (dict example: &#123;&#x27;id&#x27;: 1, &#x27;name&#x27;: &#x27;lighk&#x27;&#125;)</span></span><br><span class="line"><span class="string">    :return: The count of deleted rows</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    where = where_model.__dict__</span><br><span class="line">    conditions = []</span><br><span class="line">    <span class="keyword">if</span> where <span class="keyword">and</span> isinstance(where, dict):</span><br><span class="line">        <span class="keyword">for</span> k, v <span class="keyword">in</span> where.items():</span><br><span class="line">            conditions.append(<span class="string">&quot;%s=&#x27;%s&#x27;&quot;</span> % (k, v))</span><br><span class="line">    sql = <span class="string">&quot;delete from %s where %s&quot;</span> % (table, <span class="string">&#x27; AND &#x27;</span>.join(conditions))</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> self.execute(sql)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/SQL/" rel="tag"># SQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/git%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" rel="prev" title="git 常用操作">
+      <i class="fa fa-chevron-left"></i> git 常用操作
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/%E5%89%94%E9%99%A4Intellij%E4%B8%ADMybatis%E7%9A%84Mapper%E8%87%AA%E5%8A%A8%E6%B3%A8%E5%85%A5%E8%AD%A6%E5%91%8A/" rel="next" title="剔除Intellij中Mybatis的Mapper自动注入警告">
+      剔除Intellij中Mybatis的Mapper自动注入警告 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lighkLife</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"yShF1u7c07g9bcPTKfh8AQxu-gzGzoHsz","app_key":"dvlDDT3XUXRHTpqxedBCIyyL","server_url":null,"security":false};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.init({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    }, '.mermaid');
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://http-lighklife-github-io-1.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://lighklife.github.io/2017/python%E6%93%8D%E4%BD%9C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B0%81%E8%A3%85/";
+    this.page.identifier = "2017/python操作数据库封装/";
+    this.page.title = "python操作数据库封装";
+    };
+  NexT.utils.loadComments('#disqus_thread', () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-lighklife-github-io-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Of Studies</title>
+    <url>/2016/%E3%80%8AOf%20Studies%E3%80%8B/</url>
+    <content><![CDATA[<h2 id="of-studies"><a class="markdownIt-Anchor" href="#of-studies"></a> Of Studies</h2>
+<p>——Francis Bacon</p>
+<p>Studies serve for delight, for ornament, and for ability. Their chief use for delight, is in privateness and retiring; for ornament, is in discourse; and for ability, is in the judgment and disposition of business. For expert men can execute, and perhaps judge of particulars, one by one; but the general counsels, and the plots and marshalling of affairs come best from those that are learned.</p>
+<a id="more"></a>
+<p>To spend too much time in studies is sloth; to use them too much for ornament is affection; to make judgment wholly by their rules is the humor of a scholar. They perfect nature and are perfected by experience: for natural abilities are like natural plants, that need pruning by study, and studies themselves do give forth directions too much at large, except they be bounded in by experience.<br />
+　　Crafty men contemn studies, simple men admire them, and wise men use them, for they teach not their own use; but that is a wisdom without them and above them, won by observation. Read not to contradict and confuse; nor to believe and take for granted; nor to find talk and discourse; but to weigh and consider.<br />
+　　Studies serve for delight for delight,for ornament, and for ability.Their chief use for deligmoekksms,e</p>
+]]></content>
+      <categories>
+        <category>文海珠玑</category>
+      </categories>
+      <tags>
+        <tag>散文</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java 笔记《异常》</title>
+    <url>/2016/Java-%E7%AC%94%E8%AE%B0%E3%80%8A%E5%BC%82%E5%B8%B8%E3%80%8B/</url>
+    <content><![CDATA[<ol>
+<li>为什么需要异常？</li>
+<li>程序中可能会出现那些错误和问题？</li>
+<li>异常有哪些种类？</li>
+<li>常见的异常处理方式有哪些?</li>
+<li>使用异常机制的技巧有哪些？</li>
+</ol>
+<a id="more"></a>
+<h2 id="1-为什么需要异常"><a class="markdownIt-Anchor" href="#1-为什么需要异常"></a> 1. 为什么需要异常？</h2>
+<p>用户在遇到错误时会感觉到很不爽，如果一个用户在运行程序期间，由于程序的一些错误或者外部环境的影响造成了用户数据的丢失，用户就有可能不在使用这个程序了。为了避免此类事情发生，至少应该做到：</p>
+<ul>
+<li>向用户报告错误</li>
+<li>保存所有的工作结果</li>
+<li>允许用户以妥善的形式退出程序</li>
+<li>返回到一种安全状态，并能够让用户执行一些其他的操作</li>
+</ul>
+<p>Java提供的异常捕获机制来改善这种情况。</p>
+<blockquote>
+<p><strong>某个方法不能采用正常的途径完成它的任务，就可能通过另一个路径退出该方法。</strong> 这种情况下，方法并不返回任何值，而是抛出（<code>throw</code>）一个封装了错误信息的对象。这个方法会<br />
+立刻退出，并不返回任何值，调用这个方法的代码也将无法执行，而是异常处理机制开始搜索能够处理这种异常状况的异常处理器（exception handler）。</p>
+</blockquote>
+<h2 id="2程序中可能会出现那些错误和问题"><a class="markdownIt-Anchor" href="#2程序中可能会出现那些错误和问题"></a> 2.程序中可能会出现那些错误和问题？</h2>
+<ul>
+<li>用户输入错</li>
+<li>设备错误</li>
+<li>物理限制</li>
+<li>代码错img</li>
+</ul>
+<h2 id="3异常有哪些种类"><a class="markdownIt-Anchor" href="#3异常有哪些种类"></a> 3.异常有哪些种类？</h2>
+<p><img src="http://lighklife.github.io/img/2016/Throwable.png" alt="Java异常层次结构" /></p>
+<h3 id="31-exception"><a class="markdownIt-Anchor" href="#31-exception"></a> 3.1 <code>Exception</code></h3>
+<p><a href="http://docs.oracle.com/javase/8/docs/api/">JavaAPI</a>里是这样描述的：</p>
+<ul>
+<li>extends Throwable</li>
+</ul>
+<p><em>The class Exception and its subclasses are a form of Throwable that indicates conditions that a reasonable application might want to catch.</em></p>
+<p><em>The class Exception and any subclasses that are not also subclasses of RuntimeException are <strong>checked exceptions</strong>. Checked exceptions <strong>need to</strong> be declared in a method or constructor’s throws clause if they can be thrown by the execution of the method or constructor and propagate outside the method or constructor boundary.</em></p>
+<h3 id="32-runtimeexception派生出"><a class="markdownIt-Anchor" href="#32-runtimeexception派生出"></a> 3.2 <code>RuntimeException</code>派生出</h3>
+<ol>
+<li><code>NullPointerException</code> - 空指针引用异常。</li>
+<li><code>ClassCastException</code> - 类型强制转换异常。</li>
+<li><code>IllegalArgumentException</code> - 传递非法参数异常。</li>
+<li><code>ArithmeticException</code> - 算术运算异常</li>
+<li><code>ArrayStoreException</code> - 向数组中存放与声明类型不兼容对象异常</li>
+<li><code>IndexOutOfBoundsException</code> - 下标越界异常</li>
+<li><code>NegativeArraySizeException</code> - 创建一个大小为负数的数组错误异常</li>
+<li><code>NumberFormatException</code> - 数字格式异常</li>
+<li><code>SecurityException</code> - 安全异常</li>
+<li><code>UnsupportedOperationException</code> - 不支持的操作异常</li>
+</ol>
+<p><a href="http://docs.oracle.com/javase/8/docs/api/">JavaAPI</a>里是这样描述的：</p>
+<ul>
+<li>extends Exception</li>
+</ul>
+<p><em>RuntimeException is the superclass of those exceptions that can be<br />
+thrown during the normal operation of the Java Virtual Machine.</em></p>
+<p><em>RuntimeException and its subclasses are <strong>unchecked exceptions</strong>. Unchecked exceptions <strong>do not need to</strong> be declared in a method or constructor’s throws clause if they can be thrown by the execution of the method or constructor and propagate outside the method or constructor boundary.</em></p>
+<h3 id="33-ioexception有"><a class="markdownIt-Anchor" href="#33-ioexception有"></a> 3.3 <code>IOException</code>有</h3>
+<ol>
+<li>试图打开一个不存在的文件。</li>
+<li>试图在文件尾部读数据。</li>
+<li>试图根据给的的字符串查找<code>Class</code>对象，而这个字符串表示的类并不存在。</li>
+</ol>
+<p>Java把所有的<code>Error</code>＆<code>RuntimeException</code>称为<strong>未检查(unchecked)<strong>异常，其他的异常称为</strong>已检查异常(checked)</strong>，编译器会检查是否未所以的已检查异常提供了异常处理器。</p>
+<blockquote>
+<p>如果出现了<code>RuntimeException</code>，那么一定是我的问题</p>
+</blockquote>
+<h2 id="4常见的异常处理方式有哪些"><a class="markdownIt-Anchor" href="#4常见的异常处理方式有哪些"></a> 4.常见的异常处理方式有哪些?</h2>
+<h3 id="41-声明异常"><a class="markdownIt-Anchor" href="#41-声明异常"></a> 4.1 声明异常</h3>
+<p>如标准类库提供的<code>FileInputStream</code>类的一个构造器的声明：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">FileInputStream</span><span class="params">(String name)</span> <span class="keyword">throws</span> FileNotFoundException</span></span><br></pre></td></tr></table></figure>
+<h3 id="42-抛出异常"><a class="markdownIt-Anchor" href="#42-抛出异常"></a> 4.2 抛出异常</h3>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">String <span class="title">readData</span><span class="params">(Scanner in)</span> <span class="keyword">throws</span> EOFException</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">while</span>(...)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span>(!in.hasNext()) <span class="comment">/*EOF encountered*/</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span>(n &lt; len)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> EOFException();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中为了更加细致的描述这个异常，<code>EOFException</code>类提供了一个含义字符串类型参数的构造器：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String gripe = <span class="string">&quot;Conten - length: &quot;</span> + len + <span class="string">&quot;, Received: &quot;</span> + n;</span><br><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> EOFException(gripe);</span><br></pre></td></tr></table></figure>
+<h3 id="43-捕获异常"><a class="markdownIt-Anchor" href="#43-捕获异常"></a> 4.3 捕获异常</h3>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">  code</span><br><span class="line">  more code</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span>(Exception)</span><br><span class="line">&#123;</span><br><span class="line">  handler <span class="keyword">for</span> <span class="keyword">this</span> type</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>有时候需要捕获多个异常：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">  code that might <span class="keyword">throw</span> exceptions</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span>(FileNotFoundException | UnknowHostException)</span><br><span class="line">&#123;</span><br><span class="line">  emergency action <span class="keyword">for</span> missing file and unkonw hosts</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span>(IOException)</span><br><span class="line">&#123;</span><br><span class="line">  emergency action <span class="keyword">for</span> all other I/O problems</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意这里两个异常有相同的处理动作时可以合并，合并采用的<strong>逻辑或( <code>|</code> )</strong>　而不是短路或（<code>||</code>）</p>
+</blockquote>
+<h3 id="44-再次抛出异常与异常链"><a class="markdownIt-Anchor" href="#44-再次抛出异常与异常链"></a> 4.4 再次抛出异常与异常链</h3>
+<p>在catch中可以再抛出一个异常，这样做的目的是改变异常的类型。比如执行servlet的代码可能不想知道发生错误的细节原因，但希望明确的知道servlet是否又问题。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">  access the database</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span>(SQLExeption e)</span><br><span class="line">&#123;</span><br><span class="line">  Throwable se = <span class="keyword">new</span> ServletException();</span><br><span class="line">  se.initCause(e);</span><br><span class="line">  <span class="keyword">throw</span> se;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样做在捕获到异常时就可以使用:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Throwable e = se.getCause();</span><br></pre></td></tr></table></figure>
+<p>重新得到原始异常而补丢失细节。</p>
+<h3 id="45-finally子句"><a class="markdownIt-Anchor" href="#45-finally子句"></a> 4.5 finally子句</h3>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">myFinally</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        InputStream in = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;/home/lighk/test.txt&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            in.read();</span><br><span class="line">            <span class="comment">/*take care! There is might throw other Exception*/</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            in.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (IOException e)</span><br><span class="line">    &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>内层的try只有一个职责：却倒关闭输入流。</li>
+<li>外层的try也只有一个职责：确保出现的错误。</li>
+</ul>
+<p>这里又一个问题，如果内层的try只是抛出<code>IOException</code>那么这种结构很适合。<br />
+但是如果内层的try抛出了非IOException，这些异常只有这个方法的调用者才能处理。<br />
+执行这个finally语句块，并调用close。而close()方法本身也可能抛出IOException。<br />
+当这种情况出现，原始异常会丢失，转而抛出close()方法的异常。然而第一个异常可能会更有意思。<br />
+若嵌套多层try语句也可以解决这个问题，但这会让代码变得很繁琐。<br />
+Java 7 未这种代码模式提供了一个很又用的快捷方式－－带资源的try语句。</p>
+<h3 id="46-带资源的try语句"><a class="markdownIt-Anchor" href="#46-带资源的try语句"></a> 4.6 带资源的try语句</h3>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span>(Scanner in = <span class="keyword">new</span> Scanner(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;/home/lighk/test.txt&quot;</span>));</span><br><span class="line">  PrintWriter out = <span class="function">New <span class="title">PrintWriter</span><span class="params">(<span class="string">&quot;out.txt&quot;</span>)</span>)</span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(in.hasNext())</span><br><span class="line">      out.println(in.next().toUpperCase());</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>前提是这个资源必须实现了AutoCloseable接口，或者其子接口Closeable.</p>
+<p>不论这这个方法如何退出，in &amp; out 都会关闭。若try抛出一个异常，close（）抛出一个异常，close()<br />
+的异常会被｀抑制｀。这些异常会被自动捕获，并由addSuppressed方法增加到原来的异常。若对这个异常感兴趣，<br />
+可以调用getSuppressed方法获取close抛出并被抑制的异常列表。</p>
+<h2 id="5使用异常机制的技巧有哪些"><a class="markdownIt-Anchor" href="#5使用异常机制的技巧有哪些"></a> 5.使用异常机制的技巧有哪些？</h2>
+<ol>
+<li>异常不能代替简单的测试</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(! s.empty())</span><br><span class="line">  s.pop();</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">  s.pop();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span>(EmptyStackException e)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">/*　do something */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>前者的性能要比后者高的多，因此只在异常情况下使用异常机制。</p>
+<ol start="2">
+<li>不要过分的细化异常,将正常处理与错误处理分开</li>
+<li>利用异常的层次结构</li>
+<li>不要压制异常</li>
+<li>检测错误时，｀苛刻｀比放任更好<br />
+在无效的参数调用一个方法时，返回一个虚拟的数字还是抛出一个异常？<br />
+eg. when stack is empty, we should return a null or throw a EmptyStackException?<br />
+Horstmann recommanded :</li>
+</ol>
+<blockquote>
+<p>Throw a EmptyStackException is better than throw a NullPointerException in the<br />
+following code to the error.</p>
+</blockquote>
+<ol start="6">
+<li>不要羞于传递异常<br />
+５和６可以归结为<strong>早抛出，晚捕获</strong></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Language</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Centos安装python3</title>
+    <url>/2016/Centos%E5%AE%89%E8%A3%85python3/</url>
+    <content><![CDATA[<h4 id="1-首先安装一些python需要的库"><a class="markdownIt-Anchor" href="#1-首先安装一些python需要的库"></a> 1. 首先安装一些python需要的库</h4>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">yum groupinstall &#x27;Development Tools&#x27;</span><br><span class="line">yum install zlib-devel bzip2-devel  openssl-devel ncurses-devel sqlite-devel</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h4 id="2-下载python-源码编译安装"><a class="markdownIt-Anchor" href="#2-下载python-源码编译安装"></a> 2. 下载python 源码编译安装</h4>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ wget  https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tar.xz</span><br><span class="line">tar Jxvf  Python-3.5.0.tar.xz</span><br><span class="line">$ <span class="built_in">cd</span> Python-3.5.0</span><br><span class="line">./configure --prefix=/usr/<span class="built_in">local</span>/python3</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<h4 id="3-python35-源码安装时会自动安装pip"><a class="markdownIt-Anchor" href="#3-python35-源码安装时会自动安装pip"></a> 3. python3.5 源码安装时会自动安装pip</h4>
+<p>如果没有pip，可以手动下载get-pip.py安装pip。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ wget https://bootstrap.pypa.io/get-pip.py</span><br><span class="line">$ python get-pip.py</span><br></pre></td></tr></table></figure>
+<h4 id="4-最后创建软链接"><a class="markdownIt-Anchor" href="#4-最后创建软链接"></a> 4. 最后创建软链接</h4>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ln -sv  /usr/<span class="built_in">local</span>/python3/bin/python3 /usr/bin/python3</span><br><span class="line">$ ln -sv  /usr/<span class="built_in">local</span>/python3/bin/pip3 /usr/bin/pip3</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Language</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Youth(Samuel Ullman)</title>
+    <url>/2016/%E3%80%8AYouth%E3%80%8B/</url>
+    <content><![CDATA[<p>　　Youth is not a time a of life;it is a state of mind;it is not a matter of rosy cheeks,red lips and supple knees; it is a matter of the will, a quality of the imagination, a vigor of the emotions; it is the freshness of the deep springs of life.</p>
+<a id="more"></a>
+<p>　　Youth means a temperamental predominance of courage over timidity of the appetite,for adventure over the love of ease. This often exits in a man of sixty more than a boy of twenty. Nobody grows old merely by a number of years. We grows old by deserting our ideals.</p>
+<p>　　years may wrinkle the skin, but to</p>
+]]></content>
+      <categories>
+        <category>文海珠玑</category>
+      </categories>
+      <tags>
+        <tag>散文</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Madonna&#39;s-VMAs-Speech-Dedicated-to-Michael-Jackson</title>
+    <url>/2017/%20Madonna&#39;s-VMAs-Speech-Dedicated-to-Michael-Jackson/</url>
+    <content><![CDATA[<blockquote class="blockquote-center">
+<p>Yes, Michael Jackson was a human being but he was a king. Long live the king.</p>
+
+</blockquote>
+<a id="more"></a>
+<p>&quot;Michael Jackson was born in August, 1958. so was I. Michael Jackson grew up in the suburbs of the Midwest. So did I. Michael Jackson had eight brothers and sisters. So do I. When Michael Jackson was 6 he became a superstar and was perhaps the world’s most beloved child. When I was 6 my mother died. I think he got the shorter end of the stick.</p>
+<p>&quot;I never had a mother, but he never had a childhood. And when you never get to have something, you become obsessed by it. I spent my childhood searching for my mother figures; sometimes I was successful. But how do you recreate your childhood when you are under the magnifying glass of the world for your entire life?</p>
+<p>&quot;There is no question that Michael Jackson was one of the greatest talents the world has ever known. … That when he sang a song at the ripe old age of 8, he could make you feel like an experienced adult was squeezing your heart with his words. … That the way he moved had the elegance of Fred Astaire and packed the punch of Muhammad Ali. … That his music had an extra layer of inexplicable magic that didn’t just make you want to dance but actually made you believe that you could fly, dare to dream, be anything that you wanted to be. Because that is what heroes do. And Michael Jackson was a hero.</p>
+<p>&quot;He performed in soccer stadiums around the world, he sold hundreds of millions of records, he dined with prime ministers and presidents. Girls fell in love with him, boys fell in love with him, everyone wanted to dance like him, he seemed otherworldly, but he was also a human being. Like most performers, he was shy and plagued with insecurities.</p>
+<p>&quot;I can’t say we were great friends, but in 1991 I decided I wanted to get to know him better. I asked him out to dinner: I said, ‘My treat, I’ll drive, just you and me.’ He agreed and showed up to my house without any bodyguards. We drove to the restaurant in my car. It was dark out, but he was still wearing sunglasses. I said, ‘Michael, I feel like I’m talking to a limousine, do you think you could take off those glasses so I could see your eyes?’ He paused for a moment, then he tossed the glasses out the window, looked at me with a wink and a smile and said, ‘Can you see me now, is that better?’</p>
+<p>&quot;In that moment, I could see both his vulnerability and his charm. The rest of the dinner, I was hell-bent on getting him to eat French fries, drink wine, have dessert and say bad words, things he never seemed to allow himself to do. Later, we went back to my house to watch a movie and we sat on the couch like two kids, and somewhere in the middle of the film, his hand snuck over and held mine. It felt like he was looking for a friend more than a romance and I was happy to oblige him. And in that moment he didn’t feel like a superstar, he felt like a human being. We went out a few more times together and then for one reason or another we fell out of touch. Then, the witch hunt began and it seemed like one negative story after the other was coming out about Michael. I felt his pain. I know what it’s like to walk down the street and feel like the whole world has turned against you. I know what it’s like to feel helpless and unable to defend yourself because the roar of the lynch mob is so loud that you are convinced your voice can never be heard.</p>
+<p>&quot;But I had a childhood, and I was allowed to make mistakes and find my own way in the world without the glare of the spotlight. When I first heard that Michael had died I was in London, days away from the opening of my tour. Michael was going to perform in the same venue as me a week later. All I could think about in that moment was that I had abandoned him. That we had abandoned him. That we had allowed this magnificent creature that once set the world on fire to somehow slip through the cracks. While he was trying to build a family and rebuild his career, we were all busy passing judgment. Most of us had turned our backs on him.</p>
+<p>&quot;In a desperate attempt to hold onto his memory, I went on the Internet to watch old clips of him dancing and singing on TV and onstage and I thought, ‘My God, he was so unique, so original, so rare. And there will never be anyone like him again.’ He was a king. But he was also a human being and alas, we are all human beings and sometimes we have to lose things before we can truly appreciate them. I want to end this on a positive note and say that my sons, age 9 and 4, are obsessed with Michael Jackson. There’s a whole lot of crotch-grabbing and moonwalking going on in my house, and it seems like a whole new generation of kids has discovered his genius and are bringing him to life again. I hope that wherever Michael is now, he is smiling about this.</p>
+<p>“Yes, yes Michael Jackson was a human being, but dammit, he was a king. Long live the king.”</p>
+]]></content>
+      <categories>
+        <category>文海珠玑</category>
+      </categories>
+      <tags>
+        <tag>演讲稿</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Https抓包</title>
+    <url>/2017/Https%E6%8A%93%E5%8C%85/</url>
+    <content><![CDATA[<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<ul>
+<li><a href="#%E5%90%AF%E5%8A%A8%E8%BF%9C%E7%A8%8Bssl%E4%BB%A3%E7%90%86">启动远程SSL代理</a></li>
+<li><a href="#%E6%8C%89%E7%85%A7%E6%8F%90%E7%A4%BA%E5%B0%86%E8%AE%BE%E7%BD%AE%E6%89%8B%E6%9C%BA%E4%BB%A3%E7%90%86%E5%B9%B6%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6">按照提示将设置手机代理，并安装证书</a>
+<ul>
+<li><a href="#%E9%80%89%E6%8B%A9%E6%89%8B%E6%9C%BA%E6%89%80%E8%BF%9E%E6%8E%A5%E7%9A%84wifi%E9%95%BF%E6%8C%89%E5%BC%B9%E5%87%BA%E4%BF%AE%E6%94%B9%E6%A1%86%E9%80%89%E6%8B%A9-manual-%E6%89%8B%E5%8A%A8%E8%BE%93%E5%85%A5charles%E6%8F%90%E7%A4%BA%E7%9A%84%E4%BB%A3%E7%90%86ip%E4%B8%8E%E7%AB%AF%E5%8F%A3">选择手机所连接的wifi，长按弹出修改框，选择 <code>Manual</code> 手动，输入Charles提示的代理IP与端口</a></li>
+<li><a href="#%E6%AD%A4%E8%BF%87%E7%A8%8B%E4%B8%ADcharles%E4%BC%9A%E8%AF%A2%E9%97%AE%E6%98%AF%E5%90%A6%E4%BF%A1%E4%BB%BB%E9%80%89%E6%8B%A9allow">此过程中Charles会询问是否信任，选择Allow</a></li>
+<li><a href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E8%BE%93%E5%85%A5charles%E6%8F%90%E7%A4%BA%E7%9A%84%E7%BD%91%E5%9D%80-chlsprossl-%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6">浏览器输入Charles提示的网址 <code>chls.pro/ssl</code>, 安装证书</a></li>
+</ul>
+</li>
+<li><a href="#charles-ssl-%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE">Charles SSL 代理设置</a></li>
+<li><a href="#%E9%87%8D%E5%90%AF-charles%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E5%B7%B2%E7%BB%8F%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E8%A7%A3%E5%AF%86%E5%90%8E%E7%9A%84https%E4%BC%A0%E8%BE%93%E5%86%85%E5%AE%B9">重启 Charles，可以看到已经可以看到解密后的Https传输内容</a></li>
+</ul>
+<!-- /TOC -->
+<a id="more"></a>
+<h1 id="启动远程ssl代理"><a class="markdownIt-Anchor" href="#启动远程ssl代理"></a> 启动远程SSL代理</h1>
+<p>![Screenshot from 2017-08-15 11-15-43](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-15-43.png)</p>
+<h1 id="按照提示将设置手机代理并安装证书"><a class="markdownIt-Anchor" href="#按照提示将设置手机代理并安装证书"></a> 按照提示将设置手机代理，并安装证书</h1>
+<p>![Screenshot from 2017-08-15 11-22-04](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-22-04.png)</p>
+<h2 id="选择手机所连接的wifi长按弹出修改框选择-manual-手动输入charles提示的代理ip与端口"><a class="markdownIt-Anchor" href="#选择手机所连接的wifi长按弹出修改框选择-manual-手动输入charles提示的代理ip与端口"></a> 选择手机所连接的wifi，长按弹出修改框，选择 <code>Manual</code> 手动，输入Charles提示的代理IP与端口</h2>
+<p><img src="http://lighklife.github.io/img/2017/Selection_010.png" alt="Selection_010" /></p>
+<h2 id="此过程中charles会询问是否信任选择allow"><a class="markdownIt-Anchor" href="#此过程中charles会询问是否信任选择allow"></a> 此过程中Charles会询问是否信任，选择Allow</h2>
+<p>![Screenshot from 2017-08-15 11-23-56](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-23-56.png)</p>
+<h2 id="浏览器输入charles提示的网址-chlsprossl-安装证书"><a class="markdownIt-Anchor" href="#浏览器输入charles提示的网址-chlsprossl-安装证书"></a> 浏览器输入Charles提示的网址 <code>chls.pro/ssl</code>, 安装证书</h2>
+<p><img src="http://lighklife.github.io/img/2017/Selection_011.png" alt="Selection_011" /></p>
+<h1 id="charles-ssl-代理设置"><a class="markdownIt-Anchor" href="#charles-ssl-代理设置"></a> Charles SSL 代理设置</h1>
+<p>![Screenshot from 2017-08-15 11-18-05](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-18-05.png)</p>
+<p>![Screenshot from 2017-08-15 11-18-18](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-18-18.png)</p>
+<h1 id="重启-charles可以看到已经可以看到解密后的https传输内容"><a class="markdownIt-Anchor" href="#重启-charles可以看到已经可以看到解密后的https传输内容"></a> 重启 Charles，可以看到已经可以看到解密后的Https传输内容</h1>
+<p>![Screenshot from 2017-08-15 11-52-24](<a href="http://lighklife.github.io/img/2017/Screenshot">http://lighklife.github.io/img/2017/Screenshot</a> from 2017-08-15 11-52-24.png)</p>
+]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>信息安全</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Lean-How-to-Learn(what‘s-learning)</title>
+    <url>/2017/Lean-How-to-Learn(week-1-what%E2%80%98s-learning)/</url>
+    <content><![CDATA[<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<ul>
+<li><a href="#focus--diffuse">Focus &amp; Diffuse</a></li>
+<li><a href="#whats-learning">what‘s learning</a></li>
+<li><a href="#%E6%8B%96%E5%BB%B6%E7%97%87%E7%AE%80%E4%BB%8B">拖延症简介</a>
+<ul>
+<li><a href="#%E6%8B%96%E5%BB%B6%E7%97%87%E4%BA%A7%E7%94%9F">拖延症产生</a></li>
+<li><a href="#%E7%95%AA%E8%8C%84%E5%B7%A5%E4%BD%9C%E6%B3%95%E8%A7%A3%E5%86%B3%E6%8B%96%E5%BB%B6%E7%97%87">番茄工作法解决拖延症</a></li>
+</ul>
+</li>
+<li><a href="#practive-makes-permanent">Practive makes Permanent</a></li>
+<li><a href="#%E8%AE%B0%E5%BF%86%E6%A6%82%E8%BF%B0">记忆概述</a>
+<ul>
+<li><a href="#working-memory">Working memory</a></li>
+<li><a href="#long-term-memory">Long term memory</a></li>
+<li><a href="#work-memory-to-long-term-memory">Work memory to long term memory</a></li>
+</ul>
+</li>
+<li><a href="#the-importance-of-sleep-in-learning">The importance of Sleep in learning</a></li>
+</ul>
+<!-- /TOC -->
+<a id="more"></a>
+<h1 id="focus-diffuse"><a class="markdownIt-Anchor" href="#focus-diffuse"></a> Focus &amp; Diffuse</h1>
+<p>我们都很熟悉 “专注” 当你一心一意的专注于某些东西上 试着去学习或者去理解它们的时候 就是“专注”。</p>
+<p>要开启一个新的思维模式，你需要一个不同的思路，你需要发散模式。发散模式可以使你以一种全新的全景视角<br />
+概括的看待问题，不再像以前一样专注某个具体的局部。</p>
+<p><img src="http://oqbaa7a72.bkt.clouddn.com/2017/Screenshot%20from%202017-08-30%2010-08-03.png" alt="Focus &amp; Diffuse" /></p>
+<ol>
+<li>专注和发散像一枚硬币的正反面，不能同事存在。</li>
+<li>在学习和解决问题中使用两种模式来回跳转，发散模式可以产生新的思路，然后再使用专注模式具体实践。</li>
+<li>学习困难的东西需要相当的时间，大脑需要转变它的学习方式，以此来努力面对消化新事物。</li>
+</ol>
+<h1 id="whats-learning"><a class="markdownIt-Anchor" href="#whats-learning"></a> what‘s learning</h1>
+<p>产生新的突触</p>
+<p><img src="http://oqbaa7a72.bkt.clouddn.com/2017/Screenshot%20from%202017-08-30%2010-29-16.png" alt="Learning" /></p>
+<h1 id="拖延症简介"><a class="markdownIt-Anchor" href="#拖延症简介"></a> 拖延症简介</h1>
+<h2 id="拖延症产生"><a class="markdownIt-Anchor" href="#拖延症产生"></a> 拖延症产生</h2>
+<p><img src="http://oqbaa7a72.bkt.clouddn.com/2017/Screenshot%20from%202017-08-30%2010-32-00.png" alt="拖延症" /></p>
+<p>当你看到一件你极度不情愿做的事情时 就好像是你激活了大脑中与疼痛相关的区域 你的大脑就会自然而然地去寻找停止这种负面刺激的方式 而这一方式便是将你的注意力转移到其他事情上 <strong>不过 我们也有应对之法 研究人员发现 当人们真正开始去做他们不喜欢的事情后 这种神经上的不适很快就会消失</strong> 看起来 你拖延的过程大概是这样的 首先 你留意到某件事且得到暗示说 这件事可能会让你产生轻微的不安 你不喜欢这种不适 因此为了消除这种感觉 你会让自己不再去关注这件让你不安的事</p>
+<h2 id="番茄工作法解决拖延症"><a class="markdownIt-Anchor" href="#番茄工作法解决拖延症"></a> 番茄工作法解决拖延症</h2>
+<p><img src="http://oqbaa7a72.bkt.clouddn.com/2017/Screenshot%20from%202017-08-30%2010-47-01.png" alt="番茄工作法" /></p>
+<h1 id="practive-makes-permanent"><a class="markdownIt-Anchor" href="#practive-makes-permanent"></a> Practive makes Permanent</h1>
+<p><img src="http://oqbaa7a72.bkt.clouddn.com/2017/Screenshot%20from%202017-08-30%2010-48-13.png" alt="练习使得记忆牢固" /></p>
+<h1 id="记忆概述"><a class="markdownIt-Anchor" href="#记忆概述"></a> 记忆概述</h1>
+<h2 id="working-memory"><a class="markdownIt-Anchor" href="#working-memory"></a> Working memory</h2>
+<p>短期记忆像一块高效的黑板，容易马上记住，但是很容易忘记。</p>
+<h2 id="long-term-memory"><a class="markdownIt-Anchor" href="#long-term-memory"></a> Long term memory</h2>
+<p>长期记忆像一个巨大的存储仓库，短期记忆间隔性的练习可以转换为长期记忆。</p>
+<h2 id="work-memory-to-long-term-memory"><a class="markdownIt-Anchor" href="#work-memory-to-long-term-memory"></a> Work memory to long term memory</h2>
+<p><img src="http://oqbaa7a72.bkt.clouddn.com/2017/Screenshot%20from%202017-08-30%2010-58-41.png" alt="间隔性练习" /></p>
+<p><strong>间隔性的练习复习要比短时间内重复更容易将短期记忆转换为长期记忆。</strong></p>
+<h1 id="the-importance-of-sleep-in-learning"><a class="markdownIt-Anchor" href="#the-importance-of-sleep-in-learning"></a> The importance of Sleep in learning</h1>
+<p><img src="http://oqbaa7a72.bkt.clouddn.com/2017/Screenshot%20from%202017-08-30%2010-54-50.png" alt="睡眠冲走毒素" /></p>
+<p>你在睡觉的时候 你的大脑会将你学习和思考过的想法和概念进行整理 它会清除掉一些记忆中不太重要的部分 同时增强你需要或想要记住的区域的记忆 在睡梦中 你的大脑也会 将你所努力学习到的东西 在神经中枢一遍遍排演以增强加深记忆力</p>
+<p>研究表明 睡眠对人们区分找出困难问题的能力 和理解所学知识的能力有显著影响 这就像是将你的意识 从大脑前额皮层中完全解放出来 帮助你的大脑的其他部分更轻松地沟通 让它们在你的睡梦中 汇集神经系统 解决学习任务 当然 你首先必须通过做集中精力状态下的工作 在脑中搭建发散思维模型</p>
+<p><strong>如果你在打个小盹或者晚上睡觉之前 复习一遍所学东西的话 可以有更大可能性梦到它 如果你更进一步 告诉自己你想要梦到这些内容的话 可能你梦到它的几率也会大大提高 梦见你所学的知识 本质上能够增强你的理解能力 在一定程度上 它可以将你的记忆整合成更易被掌握的组块信息</strong></p>
+]]></content>
+      <categories>
+        <category>软技能</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+        <tag>学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux 安装中文字体</title>
+    <url>/2017/Linux%E5%AE%89%E8%A3%85%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93/</url>
+    <content><![CDATA[<ol>
+<li>将新字体安装在JDK中</li>
+<li>也可以选择在操作系统中安装新字体</li>
+</ol>
+<a id="more"></a>
+<p>两中方式可供选择</p>
+<h3 id="1将新字体安装在jdk中"><a class="markdownIt-Anchor" href="#1将新字体安装在jdk中"></a> 1.将新字体安装在JDK中</h3>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd $JAVA_HOME/jre/lib/fonts</span><br><span class="line">mkdir fallback</span><br><span class="line">cp xxx.ttf fallback #xxx.ttf代表你想要的中文字体文件</span><br><span class="line">cd fallback</span><br><span class="line">mkfontscale</span><br><span class="line">mkfontdir</span><br></pre></td></tr></table></figure>
+<p><em>有的机器需要安装mkfontscale</em></p>
+<blockquote>
+<p>重启项目，项目即可使用新加的中文字体</p>
+</blockquote>
+<h3 id="2也可以选择在操作系统中安装新字体"><a class="markdownIt-Anchor" href="#2也可以选择在操作系统中安装新字体"></a> 2.也可以选择在操作系统中安装新字体</h3>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> centos先安装fontconfig来安装字体库</span></span><br><span class="line">yum -y install fontconfig</span><br><span class="line"></span><br><span class="line">cd /usr/shared/fonts</span><br><span class="line">mkdir chinese</span><br><span class="line">cp xxx.ttf /usr/shared/fonts/chinese #xxx.ttf代表你想要的中文字体文件</span><br><span class="line">chmod -R 755 /usr/share/fonts/chinese</span><br><span class="line"><span class="meta">#</span><span class="bash"> ttmkfdir来搜索目录中所有的字体信息，并汇总生成fonts.scale文件</span></span><br><span class="line">yum -y install ttmkfdir</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 修改系统字体配制文件，添加新建的字体文件夹</span><br><span class="line">vim &#x2F;etc&#x2F;fonts&#x2F;fonts.conf</span><br></pre></td></tr></table></figure>
+<p><img src="http://lighklife.github.io/img/2016/%E4%BF%AE%E6%94%B9%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.png" alt="修改系统字体配制文件.PNG" /></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">fc-cache</span><br><span class="line">fc-list</span><br></pre></td></tr></table></figure>
+<p><img src="http://lighklife.github.io/img/2016/%E6%B7%BB%E5%8A%A0%E5%AD%97%E4%BD%93%E6%88%90%E5%8A%9F.png" alt="添加字体成功.PNG" /></p>
+<blockquote>
+<p>重启项目，项目即可使用新加的中文字体</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Machine Learning－Introduction</title>
+    <url>/2017/Machine%20Learning%EF%BC%8DIntroduction/</url>
+    <content><![CDATA[<ol>
+<li>What is Machine Learning?</li>
+<li>Supervised learning</li>
+<li>Unsupervised Learning</li>
+</ol>
+<a id="more"></a>
+<h3 id="1-what-is-machine-learning"><a class="markdownIt-Anchor" href="#1-what-is-machine-learning"></a> 1. What is Machine Learning?</h3>
+<ul>
+<li>
+<p>Arthur Samuel described it as: “The field of study that gives computers the ability to learn without being explicitly programmed.”(older, informal definition)</p>
+</li>
+<li>
+<p>Tom Mitchell: A computer program is said to learn from experience <strong>E</strong> with respect to some class to tasks <strong>T</strong> and performance measure <strong>P</strong>, if its performance at tasks in <strong>T</strong>, as measured by <strong>P</strong>, improve with experience <strong>E</strong>.</p>
+</li>
+</ul>
+<blockquote>
+<p>In general, any machine learning problem can be assigned to one of two broad classifications: <strong>Supervised learning</strong> and <strong>Unsupervised learning.</strong></p>
+</blockquote>
+<h3 id="2-supervised-learning"><a class="markdownIt-Anchor" href="#2-supervised-learning"></a> 2. Supervised learning</h3>
+<p>In supervised learning, we are given a data set and already know what our correct output should look like, having the idea that there is a relationship between the input and the output.</p>
+<p>Supervised learning problems are categorized into <strong>“regression”</strong> and <strong>“classification”</strong> problems.</p>
+<ul>
+<li>In a regression problem, we are trying to predict results within a continuous output, meaning that we are trying to map input variables to some continuous function.</li>
+<li>In a classification problem, we are instead trying to predict results in a discrete output. In other words, we are trying to map input variables into discrete categories.</li>
+</ul>
+<h3 id="3-unsupervised-learning"><a class="markdownIt-Anchor" href="#3-unsupervised-learning"></a> 3. Unsupervised Learning</h3>
+<p>Unsupervised learning allows us to approach problems with little or no idea what our results should look like. We can derive structure from data where we don’t necessarily know the effect of the variables.</p>
+<p>We can derive this structure by clustering the data based on relationships among the variables in the data.</p>
+<p>With unsupervised learning, there is no feedback based on the prediction results.</p>
+]]></content>
+      <categories>
+        <category>AI</category>
+      </categories>
+      <tags>
+        <tag>AI</tag>
+        <tag>ML</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python带参数的装时器</title>
+    <url>/2017/Python%E5%B8%A6%E5%8F%82%E6%95%B0%E7%9A%84%E8%A3%85%E6%97%B6%E5%99%A8/</url>
+    <content><![CDATA[<blockquote>
+<p>摘录整理于<a href="http://www.imooc.com/code/6066">imooc</a></p>
+</blockquote>
+<ol>
+<li>一个带参数的<code>decorator</code>例子</li>
+<li>代参数的<code>decorator</code>为什么要包三层（三阶）？</li>
+</ol>
+<a id="more"></a>
+<h3 id="1-一个带参数的decorator例子"><a class="markdownIt-Anchor" href="#1-一个带参数的decorator例子"></a> 1. 一个带参数的<code>decorator</code>例子</h3>
+<p>例子是根据 <code>@performance（'time_type'）</code>携带的时间类型来输出所装饰的函数<code>factorial</code>的执行时间。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> functools</span><br><span class="line"><span class="keyword">from</span> past.builtins.noniterators <span class="keyword">import</span> reduce</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">performance</span>(<span class="params">unit</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">perf_decorator</span>(<span class="params">f</span>):</span></span><br><span class="line">        <span class="comment"># @functools.wraps应该作用在返回的新函数上。</span></span><br><span class="line"><span class="meta">        @functools.wraps(f)</span></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span>(<span class="params">*args, **kw</span>):</span></span><br><span class="line">            t1 = time.time()</span><br><span class="line">            r = f(*args, **kw)</span><br><span class="line">            t2 = time.time()</span><br><span class="line">            t = (t2 - t1) * <span class="number">1000</span> <span class="keyword">if</span> unit == <span class="string">&#x27;ms&#x27;</span> <span class="keyword">else</span> (t2 - t1)</span><br><span class="line">            print(<span class="string">&#x27;call %s() in %f %s&#x27;</span> % (f.__name__, t, unit))</span><br><span class="line">            <span class="keyword">return</span> r</span><br><span class="line">        <span class="keyword">return</span> wrapper</span><br><span class="line">    <span class="keyword">return</span> perf_decorator</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@performance(&#x27;ms&#x27;)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">factorial</span>(<span class="params">n</span>):</span></span><br><span class="line">    <span class="keyword">return</span> reduce(<span class="keyword">lambda</span> x, y: x * y, range(<span class="number">1</span>, n + <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">factorial(<span class="number">10000</span>)</span><br><span class="line">print(factorial.__name__)</span><br></pre></td></tr></table></figure>
+<h3 id="2代参数的decorator为什么要包三层三阶"><a class="markdownIt-Anchor" href="#2代参数的decorator为什么要包三层三阶"></a> 2.代参数的<code>decorator</code>为什么要包三层（三阶）？</h3>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 为什么包三层（三阶）</span></span><br><span class="line"><span class="meta">@log(&#x27;DEBUG&#x27;)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">my_func</span>():</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"><span class="comment"># 把上面的定义翻译成高阶函数的调用，就是：</span></span><br><span class="line"></span><br><span class="line">my_func = log(<span class="string">&#x27;DEBUG&#x27;</span>)(my_func)</span><br><span class="line"><span class="comment"># 上面的语句看上去还是比较绕，再展开一下：</span></span><br><span class="line"></span><br><span class="line">log_decorator = log(<span class="string">&#x27;DEBUG&#x27;</span>)</span><br><span class="line">my_func = log_decorator(my_func)</span><br><span class="line"><span class="comment"># 上面的语句又相当于：</span></span><br><span class="line"></span><br><span class="line">log_decorator = log(<span class="string">&#x27;DEBUG&#x27;</span>)</span><br><span class="line"><span class="meta">@log_decorator</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">my_func</span>():</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"><span class="comment"># 所以，带参数的log函数首先返回一个decorator函数，再让这个decorator函数接收my_func并返回新函数：</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">log</span>(<span class="params">prefix</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">log_decorator</span>(<span class="params">f</span>):</span></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span>(<span class="params">*args, **kw</span>):</span></span><br><span class="line">            print(<span class="string">&#x27;[%s] %s()...&#x27;</span> % (prefix, f.__name__))</span><br><span class="line">            <span class="keyword">return</span> f(*args, **kw)</span><br><span class="line">        <span class="keyword">return</span> wrapper</span><br><span class="line">    <span class="keyword">return</span> log_decorator</span><br><span class="line"></span><br><span class="line"><span class="meta">@log(&#x27;DEBUG&#x27;)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span>():</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line">print(test())</span><br></pre></td></tr></table></figure>
+<p>简而言之，最外层负责把<code>decorator</code>的参数<code>DEBUG</code>传进来，既然<code>decorator</code>携带的参数已经传进来，那么剩下的中间层和里层就是一个不带参的<code>decorator</code>的语法糖。反之而推，要多携带参数，肯定是需要多加一阶。</p>
+]]></content>
+      <categories>
+        <category>Language</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Spring 综述</title>
+    <url>/2017/Spring%E7%BB%BC%E8%BF%B0/</url>
+    <content><![CDATA[<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<ul>
+<li><a href="#1-spring%E7%9A%84%E6%A0%B9%E6%9C%AC%E4%BD%BF%E5%91%BD%E6%98%AF%E4%BB%80%E4%B9%88">1. Spring的根本使命是什么？</a></li>
+<li><a href="#2-spring-%E6%80%8E%E4%B9%88%E5%B0%B1%E7%AE%80%E5%8C%96%E4%BA%86java%E5%BC%80%E5%8F%91%E5%91%A2">2. Spring 怎么就简化了Java开发呢？</a></li>
+<li><a href="#3-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5">3. 依赖注入</a></li>
+</ul>
+<!-- /TOC -->
+<a id="more"></a>
+<h1 id="1-spring的根本使命是什么"><a class="markdownIt-Anchor" href="#1-spring的根本使命是什么"></a> 1. Spring的根本使命是什么？</h1>
+<p><strong>简化Java开发</strong></p>
+<h1 id="2-spring-怎么就简化了java开发呢"><a class="markdownIt-Anchor" href="#2-spring-怎么就简化了java开发呢"></a> 2. Spring 怎么就简化了Java开发呢？</h1>
+<p>Spring采取了四种策略：</p>
+<ul>
+<li>基于POPJ 的轻量级和最小侵入性编程；</li>
+<li>通过依赖注入和面向接口编程实现松耦合；</li>
+<li>基于切面和惯例进行声明式编程；</li>
+<li>通过切面和模板减少样板式代码。</li>
+</ul>
+<h1 id="3-依赖注入"><a class="markdownIt-Anchor" href="#3-依赖注入"></a> 3. 依赖注入</h1>
+<p>依赖注入是组装应用对象的一种方式，对象无需知道依赖来自何方或者依赖的实现方式。</p>
+]]></content>
+      <categories>
+        <category>框架</category>
+      </categories>
+      <tags>
+        <tag>Spring</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git 常用操作</title>
+    <url>/2017/git%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<ul>
+<li><a href="#%E8%A6%86%E7%9B%96%E6%9B%B4%E6%96%B0">覆盖更新</a></li>
+<li><a href="#%E8%88%8D%E5%BC%83%E8%BF%BD%E8%B8%AA%E6%9F%90%E4%B8%AA%E6%96%87%E4%BB%B6">舍弃追踪某个文件</a></li>
+<li><a href="#%E8%AE%B0%E4%BD%8F%E7%94%A8%E6%88%B7%E5%90%8D%E5%92%8C%E5%AF%86%E7%A0%81">记住用户名和密码</a></li>
+<li><a href="#%E8%AE%BE%E7%BD%AE%E6%98%BE%E7%A4%BA%E6%8F%90%E4%BA%A4%E8%AE%B0%E5%BD%95%E6%A0%91%E5%9B%BE%E5%88%AB%E5%90%8D">设置显示提交记录树图别名</a></li>
+</ul>
+<!-- /TOC -->
+<a id="more"></a>
+<h1 id="覆盖更新"><a class="markdownIt-Anchor" href="#覆盖更新"></a> 覆盖更新</h1>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git fetch --all</span><br><span class="line">git reset --hard origin/master</span><br></pre></td></tr></table></figure>
+<h1 id="舍弃追踪某个文件"><a class="markdownIt-Anchor" href="#舍弃追踪某个文件"></a> 舍弃追踪某个文件</h1>
+<p>舍弃追踪 CarDataSpider/utils/DB.py</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git update-index --assume-unchanged CarDataSpider/utils/DB.py</span><br></pre></td></tr></table></figure>
+<p>继续追踪</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git update-index --no-assume-unchanged CarDataSpider/utils/DB.py</span><br></pre></td></tr></table></figure>
+<h1 id="记住用户名和密码"><a class="markdownIt-Anchor" href="#记住用户名和密码"></a> 记住用户名和密码</h1>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config --global credential.helper store</span><br></pre></td></tr></table></figure>
+<h1 id="设置显示提交记录树图别名"><a class="markdownIt-Anchor" href="#设置显示提交记录树图别名"></a> 设置显示提交记录树图别名</h1>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config --global alias.lg <span class="string">&quot;log --graph --all --pretty=format:&#x27;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&#x27; --abbrev-commit --date=relative&quot;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mysql维护笔记</title>
+    <url>/2017/mysql-note/</url>
+    <content><![CDATA[<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<ul>
+<li><a href="#%E5%85%81%E8%AE%B8%E8%BF%9C%E7%A8%8B%E8%AE%BF%E9%97%AE">允许远程访问</a></li>
+<li><a href="#%E6%94%AF%E6%8C%81%E8%A1%A8%E6%83%85">支持表情</a></li>
+</ul>
+<!-- /TOC -->
+<a id="more"></a>
+<h1 id="允许远程访问"><a class="markdownIt-Anchor" href="#允许远程访问"></a> 允许远程访问</h1>
+<ol>
+<li>被访问绑定地址的的修改 修改 my.cnf 文件</li>
+</ol>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">bind-address    &#x3D; 0.0.0.0</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>保存并重启mysql服务</li>
+</ol>
+  <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ sudo /etc/init.d/mysql restart</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>授权用户远程链接</li>
+</ol>
+  <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">mysql&gt; grant all privileges on *.* to root@<span class="string">&quot;%&quot;</span> identified by <span class="string">&quot;password&quot;</span> with grant</span><br><span class="line">option;</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
+<h1 id="支持表情"><a class="markdownIt-Anchor" href="#支持表情"></a> 支持表情</h1>
+<ol>
+<li>my.cnf 添加以下内容</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[mysqld] character-set-server &#x3D; utf8mb4 collation-server &#x3D; utf8mb4_general_ci init_connect&#x3D;&#39;SET NAMES utf8mb4&#39; skip-character-set-client-handshake &#x3D; true</span><br><span class="line"></span><br><span class="line">[client] default-character-set&#x3D;utf8mb4</span><br><span class="line"></span><br><span class="line">[mysql] default-character-set&#x3D;utf8mb4</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>重启服务</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ sudo /etc/init.d/mysql restart</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>修改对应的数据库，表，字段</li>
+</ol>
+]]></content>
+      <categories>
+        <category>框架</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ubuntu 休眠后无法链接wifi</title>
+    <url>/2017/ubuntu%E4%BC%91%E7%9C%A0%E5%90%8E%E6%97%A0%E6%B3%95%E9%93%BE%E6%8E%A5wifi/</url>
+    <content><![CDATA[<h3 id="1-临时解决方式"><a class="markdownIt-Anchor" href="#1-临时解决方式"></a> 1. 临时解决方式</h3>
+<p>如果不嫌麻烦可以在在不能连接网络的时候重启网络服务</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo service network-manager restart</span><br></pre></td></tr></table></figure>
+<p>或者在右上角去掉　<code>Enable Wi-Fi</code> , 然后又再次勾选上，wifi 即可用。</p>
+<h3 id="2-彻底解决"><a class="markdownIt-Anchor" href="#2-彻底解决"></a> 2. 彻底解决</h3>
+<p>在ubuntu的论坛找到<a href="http://askubuntu.com/questions/762198/16-04-lts-wifi-connection-issues">解决方案</a>,这是一个 network-manager 的 bug.</p>
+<blockquote>
+<p>Finally I was able to fix the issues after trying out numbers of different methods.</p>
+<ol>
+<li>Get details of your PCI wireless card by running <br></li>
+</ol>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo lshw -class network</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ol start="2">
+<li>Get your card model info according to the product line. For instance, as you can see in the question &gt;description it says product: <code>RTL8723BE PCIe Wireless Network Adapter</code> so the model of my card is RTL8723BE</li>
+<li>Open or create <code>/etc/pm/config.d/config</code> and add SUSPEND_MODULES=“rtl8723be”(replace rtl8723be with your &gt;own model number) Then run</li>
+</ol>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;options rtl8723be fwlps=N&quot;</span> | sudo tee /etc/modprobe.d/rtl8723be.conf</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>and reboot.</p>
+</blockquote>
+<blockquote>
+<p>Now your system should be able to reconnect automatically after sleep, and wifi connection never got lost once for me after doing this.<br><br />
+“The up/down arrows is likely a network manager bug that results in network manager thinking the wifi device is actually ethernet.”, according to Jeremy31.see bug info here You should be able to fix it by installing NetworkManager-1.2.0.</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python操作数据库封装</title>
+    <url>/2017/python%E6%93%8D%E4%BD%9C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B0%81%E8%A3%85/</url>
+    <content><![CDATA[<p>起因：主要是解决<code>单表</code>增删改查时，遇到字段比较多的表，写出的sql比较难维护，而且代码不够整洁。（就是因为有两个table都有一百个字段，很难维护）<br />
+特点便是操作可以使用简单实体，查询返回的结果集合也是简单实体。如下：</p>
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<ul>
+<li><a href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E4%B8%8E%E5%85%B3%E9%97%AD">初始化，数据库连接与关闭</a></li>
+<li><a href="#%E7%9B%B4%E6%8E%A5%E6%89%A7%E8%A1%8Csql%E4%B8%8E%E8%8E%B7%E5%8F%96%E6%B8%B8%E6%A0%87">直接执行sql与获取游标</a></li>
+<li><a href="#%E6%9F%A5%E8%AF%A2">查询</a></li>
+<li><a href="#%E4%BF%AE%E6%94%B9%E6%95%B0%E6%8D%AE">修改数据</a></li>
+<li><a href="#%E6%B7%BB%E5%8A%A0%E6%95%B0%E6%8D%AE">添加数据</a></li>
+<li><a href="#%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE">删除数据</a></li>
+</ul>
+<!-- /TOC -->
+<a id="more"></a>
+<h1 id="初始化数据库连接与关闭"><a class="markdownIt-Anchor" href="#初始化数据库连接与关闭"></a> 初始化，数据库连接与关闭</h1>
+<p>这里使用PooledDB作为连接池， 通过<code>Tools.get_host_pwd()</code>可以获取不同运行环境需要连接数据库地址和密码</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DB</span>(<span class="params">object</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self,db_name</span>):</span></span><br><span class="line">        host, pwd = Tools.get_host_pwd()</span><br><span class="line">        config = &#123;</span><br><span class="line">            <span class="string">&#x27;user&#x27;</span>: <span class="string">&#x27;root&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;password&#x27;</span>: pwd,</span><br><span class="line">            <span class="string">&#x27;host&#x27;</span>: host,</span><br><span class="line">            <span class="string">&#x27;port&#x27;</span>: <span class="number">3306</span>,</span><br><span class="line">            <span class="string">&#x27;database&#x27;</span>: db_name,</span><br><span class="line">            <span class="string">&#x27;charset&#x27;</span>: <span class="string">&#x27;utf8&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">        self._pool = PooledDB(pymysql, mincached=<span class="number">4</span>, maxcached=<span class="number">10</span>, setsession=[<span class="string">&#x27;SET AUTOCOMMIT = 1&#x27;</span>], **config)</span><br><span class="line">        self._conn = self._pool.connection()</span><br><span class="line">        self._cur = self._conn.cursor()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">close_db</span>(<span class="params">self</span>):</span></span><br><span class="line">        self._cur.close()</span><br><span class="line">        self._conn.close()</span><br></pre></td></tr></table></figure>
+<h1 id="直接执行sql与获取游标"><a class="markdownIt-Anchor" href="#直接执行sql与获取游标"></a> 直接执行sql与获取游标</h1>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">execute</span>(<span class="params">self, sql</span>):</span></span><br><span class="line">    <span class="keyword">return</span> self._cur.execute(sql)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_cur</span>(<span class="params">self</span>):</span></span><br><span class="line">    <span class="keyword">return</span> self._cur</span><br></pre></td></tr></table></figure>
+<h1 id="查询"><a class="markdownIt-Anchor" href="#查询"></a> 查询</h1>
+<p>这里添加了三种查询方式</p>
+<ul>
+<li>select 根据where刷选条件返回查询到的所有实体</li>
+<li>select_one 最多返回一个实体</li>
+<li>select_by_sql 使用自己编写的sql去查询</li>
+</ul>
+<p>这样单表查询就显得代码很整洁清晰，修改维护也更加方便</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    db = DB(<span class="string">&#x27;car_db&#x27;</span>)</span><br><span class="line">    brand = Brand()</span><br><span class="line">    brand.auto_brand_id = <span class="string">&#x27;35&#x27;</span></span><br><span class="line">    brand.letter = <span class="string">&#x27;M&#x27;</span></span><br><span class="line">    brand.brand_name = <span class="string">&#x27;--阿斯顿·马丁&#x27;</span></span><br><span class="line">    db_brand = db.select_one(<span class="string">&#x27;car_brand&#x27;</span>, where_model=brand)</span><br><span class="line">    print(brand.__dict__)</span><br></pre></td></tr></table></figure>
+<p>其中需要定义对应数据库表的实体</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Brand</span>(<span class="params">object</span>):</span></span><br><span class="line">    id = <span class="literal">None</span></span><br><span class="line">    auto_id = <span class="literal">None</span></span><br><span class="line">    auto_brand_id = <span class="literal">None</span></span><br><span class="line">    letter = <span class="literal">None</span></span><br><span class="line">    brand_name = <span class="literal">None</span></span><br><span class="line">    logo_url = <span class="literal">None</span></span><br><span class="line">    update_time = <span class="literal">None</span></span><br><span class="line">    country = <span class="literal">None</span></span><br><span class="line">    sort = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_field</span>(<span class="params">cls</span>):</span></span><br><span class="line">        <span class="keyword">return</span> [<span class="string">&#x27;id&#x27;</span>, <span class="string">&#x27;auto_brand_id&#x27;</span>, <span class="string">&#x27;letter&#x27;</span>, <span class="string">&#x27;brand_name&#x27;</span>, <span class="string">&#x27;logo_url&#x27;</span>,</span><br><span class="line">                <span class="string">&#x27;update_time&#x27;</span>, <span class="string">&#x27;country&#x27;</span>, <span class="string">&#x27;sort&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<p>这里将sql查询出来结果转成实体最关键的两部是</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">result = [dict((k, row[i]) <span class="keyword">for</span> i, k <span class="keyword">in</span> enumerate(fields)) <span class="keyword">for</span> row <span class="keyword">in</span> result]</span><br><span class="line"></span><br><span class="line">Tools.dict_to_model(data, where_model)</span><br></pre></td></tr></table></figure>
+<p>先将查询结果转成表<code>dict</code>，字段名对应其值，然后将dict转成实体，方法如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dict_to_model</span>(<span class="params">a_dict, model</span>):</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> isinstance(model, object):</span><br><span class="line">        logging.error(<span class="string">&quot;model 不是类&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">    instance = copy.deepcopy(model)</span><br><span class="line">    <span class="keyword">for</span> k, v <span class="keyword">in</span> a_dict.items():</span><br><span class="line">        instance.__setattr__(k, v)</span><br><span class="line">    <span class="keyword">return</span> instance</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">select</span>(<span class="params">self, table, where_model, fields=None</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    查询数据</span></span><br><span class="line"><span class="string">    :param table:</span></span><br><span class="line"><span class="string">    :param where_model: 查询条件，类型为要查询的model实例</span></span><br><span class="line"><span class="string">    :param fields: 可选，需要查出的model的字段列表，默认查询model所有字段，</span></span><br><span class="line"><span class="string">    :return: 满足条件的model的generator</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> fields <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        fields = where_model.get_field()</span><br><span class="line">    where = <span class="string">&#x27;1=1&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> where_model.__dict__:</span><br><span class="line">        where = <span class="string">&quot; and &quot;</span>.join([<span class="string">&quot;%s=&#x27;%s&#x27;&quot;</span> % (k, v) <span class="keyword">for</span> k, v <span class="keyword">in</span> where_model.__dict__.items()])</span><br><span class="line">    sql = <span class="string">&quot;select %s from %s where %s order by id&quot;</span> % (<span class="string">&quot;,&quot;</span>.join(fields), table, where)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        self._cur.execute(sql)</span><br><span class="line">        result = self._cur.fetchall()</span><br><span class="line">        <span class="keyword">if</span> result:</span><br><span class="line">            result = [dict((k, row[i]) <span class="keyword">for</span> i, k <span class="keyword">in</span> enumerate(fields)) <span class="keyword">for</span> row <span class="keyword">in</span> result]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result = []</span><br><span class="line">        <span class="keyword">for</span> data <span class="keyword">in</span> result:</span><br><span class="line">            <span class="keyword">yield</span> Tools.dict_to_model(data, where_model)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">select_by_sql</span>(<span class="params">self, model, sql</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    查询数据</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        self._cur.execute(sql)</span><br><span class="line">        result = self._cur.fetchall()</span><br><span class="line">        <span class="keyword">if</span> result:</span><br><span class="line">            fields = model.get_field()</span><br><span class="line">            result = [dict((k, row[i]) <span class="keyword">for</span> i, k <span class="keyword">in</span> enumerate(fields)) <span class="keyword">for</span> row <span class="keyword">in</span> result]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result = []</span><br><span class="line">        <span class="keyword">for</span> data <span class="keyword">in</span> result:</span><br><span class="line">            <span class="keyword">yield</span> Tools.dict_to_model(data, model)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">select_one</span>(<span class="params">self, table, where_model</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        查询数据</span></span><br><span class="line"><span class="string">        :param table:</span></span><br><span class="line"><span class="string">        :param where_model: 查询条件，类型为要查询的model实例</span></span><br><span class="line"><span class="string">        :return: 满足条件的model的generator</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">    fields = where_model.get_field()</span><br><span class="line">    where = <span class="string">&#x27;1=1&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> where_model.__dict__:</span><br><span class="line">        where = <span class="string">&quot; and &quot;</span>.join([<span class="string">&quot;%s=&#x27;%s&#x27;&quot;</span> % (k, v) <span class="keyword">for</span> k, v <span class="keyword">in</span> where_model.__dict__.items()])</span><br><span class="line">    sql = <span class="string">&quot;select %s from %s where %s order by id limit 1&quot;</span> % (<span class="string">&quot;,&quot;</span>.join(fields), table, where)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        self.execute(sql)</span><br><span class="line">        result = self._cur.fetchall()</span><br><span class="line">        <span class="keyword">if</span> result:</span><br><span class="line">            result = [dict((k, row[i]) <span class="keyword">for</span> i, k <span class="keyword">in</span> enumerate(fields)) <span class="keyword">for</span> row <span class="keyword">in</span> result]</span><br><span class="line">            <span class="keyword">return</span> Tools.dict_to_model(result[<span class="number">0</span>], where_model)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line"></span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br></pre></td></tr></table></figure>
+<h1 id="修改数据"><a class="markdownIt-Anchor" href="#修改数据"></a> 修改数据</h1>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 更新数据</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update</span>(<span class="params">self, table, model, where_model</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    更新</span></span><br><span class="line"><span class="string">    :param table: 表名</span></span><br><span class="line"><span class="string">    :param model: 更新的实例</span></span><br><span class="line"><span class="string">    :param where_model: 条件，类型与model相同</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    where = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> where_model.__dict__:</span><br><span class="line">        where = <span class="string">&quot; and &quot;</span>.join([<span class="string">&quot;%s=&#x27;%s&#x27;&quot;</span> % (k, v) <span class="keyword">for</span> k, v <span class="keyword">in</span> where_model.__dict__.items()])</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        logging.error(<span class="string">&#x27;where_model 不能为空&#x27;</span>)</span><br><span class="line">    fields = model.__dict__</span><br><span class="line">    data = <span class="string">&quot;,&quot;</span>.join([<span class="string">&quot;%s=&#x27;%s&#x27;&quot;</span> % (k, v) <span class="keyword">for</span> k, v <span class="keyword">in</span> fields.items()])</span><br><span class="line">    sql = <span class="string">&#x27;update %s set %s where&#x27;</span> <span class="string">&#x27; %s &#x27;</span> % (table, data, where)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> self.execute(sql)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="添加数据"><a class="markdownIt-Anchor" href="#添加数据"></a> 添加数据</h1>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">insert</span>(<span class="params">self, table, model</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    insert data into table</span></span><br><span class="line"><span class="string">    :param model:</span></span><br><span class="line"><span class="string">    :param table: table name</span></span><br><span class="line"><span class="string">    :return: The result of insert sql execute</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    data = model.__dict__</span><br><span class="line">    fields, values = [], []</span><br><span class="line">    <span class="keyword">for</span> k, v <span class="keyword">in</span> data.items():</span><br><span class="line">        fields.append(k)</span><br><span class="line">        values.append(<span class="string">&quot;&#x27;%s&#x27;&quot;</span> % v)</span><br><span class="line">    sql = <span class="string">&quot;insert into %s (%s) values (%s)&quot;</span> % (table, <span class="string">&quot;,&quot;</span>.join(fields), <span class="string">&quot;,&quot;</span>.join(values))</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> self.execute(sql)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br></pre></td></tr></table></figure>
+<h1 id="删除数据"><a class="markdownIt-Anchor" href="#删除数据"></a> 删除数据</h1>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">delete</span>(<span class="params">self, table, where_model</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    delete rows from table with the condition where</span></span><br><span class="line"><span class="string">    :param table: table name (String)</span></span><br><span class="line"><span class="string">    :param where_model: condition (dict example: &#123;&#x27;id&#x27;: 1, &#x27;name&#x27;: &#x27;lighk&#x27;&#125;)</span></span><br><span class="line"><span class="string">    :return: The count of deleted rows</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    where = where_model.__dict__</span><br><span class="line">    conditions = []</span><br><span class="line">    <span class="keyword">if</span> where <span class="keyword">and</span> isinstance(where, dict):</span><br><span class="line">        <span class="keyword">for</span> k, v <span class="keyword">in</span> where.items():</span><br><span class="line">            conditions.append(<span class="string">&quot;%s=&#x27;%s&#x27;&quot;</span> % (k, v))</span><br><span class="line">    sql = <span class="string">&quot;delete from %s where %s&quot;</span> % (table, <span class="string">&#x27; AND &#x27;</span>.join(conditions))</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> self.execute(sql)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        self.close_db()</span><br><span class="line">        logging.error(<span class="string">&quot;Execute &#x27;%s&#x27; error: %s&quot;</span> % (sql, traceback.format_exc()))</span><br><span class="line">        logging.error(e)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Language</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>SQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>剔除Intellij中Mybatis的Mapper自动注入警告</title>
+    <url>/2017/%E5%89%94%E9%99%A4Intellij%E4%B8%ADMybatis%E7%9A%84Mapper%E8%87%AA%E5%8A%A8%E6%B3%A8%E5%85%A5%E8%AD%A6%E5%91%8A/</url>
+    <content><![CDATA[<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<ul>
+<li><a href="#%E8%B5%B7%E6%BA%90">起源</a></li>
+<li><a href="#%E5%8C%BA%E5%88%ABcontrollerservicerepositorycomponent">区别<code>@Controller</code>,<code>@Service</code>,<code>@Repository</code>,<code>@Component</code></a></li>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BB%BA%E8%AE%AE%E6%9E%84%E9%80%A0%E5%99%A8%E6%B3%A8%E5%85%A5">为什么建议构造器注入</a>
+<ul>
+<li><a href="#field-injection">Field injection:</a></li>
+<li><a href="#constructor-injection">Constructor injection:</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+<a id="more"></a>
+<h1 id="起源"><a class="markdownIt-Anchor" href="#起源"></a> 起源</h1>
+<p>idea 自动注入Mapper有警告，而且又红色错误提醒（编译可以通过）<br />
+<img src="http://lighklife.github.io/img/2017/mapper%E6%8A%A5%E9%94%99.png" alt="idea 自动注入Mapper报红色警告" /><br />
+这很烦，不是吗？ 我受够了，得想点办法。</p>
+<p>idea会提示</p>
+<blockquote>
+<p>Spring team recommends: “Always use constructor based dependency injection in your beans. Always use assertions for mandatory dependencies.”</p>
+</blockquote>
+<p>为毛Spring这样推荐哇？(⊙o⊙)嗯，按照提示先修改为：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> UserMapper userMapper;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">UserServiceImpl</span><span class="params">(UserMapper userMapper)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.userMapper = userMapper;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此时仍然存在一个问题是idea提示</p>
+<blockquote>
+<p>Could not autowire.</p>
+</blockquote>
+<p>自动注入 bean， spring帮助我们完成了，但是同时Spring提供了一些注解来显式的注明bean之间的引用关系，其中最为熟知的自然是<code>@Controller</code>,<code>@Service</code>,<code>@Repository</code>,<code>@Component</code>等。<br />
+这里其实给<code>UserMapper</code>接口加上<code>@Repository</code>,<code>@Component</code>就可以解决，那么他们之间有什么区别？</p>
+<h1 id="区别controllerservicerepositorycomponent"><a class="markdownIt-Anchor" href="#区别controllerservicerepositorycomponent"></a> 区别<code>@Controller</code>,<code>@Service</code>,<code>@Repository</code>,<code>@Component</code></h1>
+<p>在<a href="https://stackoverflow.com/questions/6827752/whats-the-difference-between-component-repository-service-annotations-in">Stackoverfolw</a>找到了同样的问题,得票最高的给出了一个表</p>
+<table>
+<thead>
+<tr>
+<th>Annotation</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@Component</td>
+<td>generic stereotype for any Spring-managed component</td>
+</tr>
+<tr>
+<td>@Repository</td>
+<td>stereotype for persistence layer</td>
+</tr>
+<tr>
+<td>@Service</td>
+<td>stereotype for service layer</td>
+</tr>
+<tr>
+<td>@Controller</td>
+<td>stereotype for presentation layer (spring-mvc)</td>
+</tr>
+</tbody>
+</table>
+<p>也提出，使用@Service, @Controller, @Repository更好做切面，也有人给出总结：</p>
+<blockquote>
+<p>@Service, @Controller, @Repository = {@Component + some more special functionality}</p>
+</blockquote>
+<h1 id="为什么建议构造器注入"><a class="markdownIt-Anchor" href="#为什么建议构造器注入"></a> 为什么建议构造器注入</h1>
+<p>构造器注入与域注入<br />
+热门文章 <a href="http://olivergierke.de/2013/11/why-field-injection-is-evil/">Why field injection is evil</a> 给出总结：</p>
+<h3 id="field-injection"><a class="markdownIt-Anchor" href="#field-injection"></a> Field injection:</h3>
+<ul>
+<li>less code to write</li>
+<li>unsafe code</li>
+<li>more complicated to test</li>
+</ul>
+<h3 id="constructor-injection"><a class="markdownIt-Anchor" href="#constructor-injection"></a> Constructor injection:</h3>
+<ul>
+<li>safe code</li>
+<li>more code to write (see the hint to Lombok)</li>
+<li>easy to test</li>
+</ul>
+<p>Spring 的博客上指出 <a href="https://spring.io/blog/2007/07/11/setter-injection-versus-constructor-injection-and-the-use-of-required/">Setter injection versus constructor injection and the use of @Required</a></p>
+]]></content>
+      <categories>
+        <category>框架</category>
+      </categories>
+      <tags>
+        <tag>Spring</tag>
+        <tag>IDEA</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>单向散列函数，消息认证码，数字签名，证书</title>
+    <url>/2017/%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0%EF%BC%8C%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81%E7%A0%81%EF%BC%8C%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%EF%BC%8C%E8%AF%81%E4%B9%A6/</url>
+    <content><![CDATA[<ol>
+<li>
+<p>单向散列函数<br />
+1.1 什么是单项散列函数？<br />
+1.2 单项散列函数的性质<br />
+1.3 单项散列函数实际应用</p>
+</li>
+<li>
+<p>消息认证码——消息被正确传送了吗？<br />
+2.1 消息认证码（Message Authentication Code） 是一种与密钥相关联的单项散列函数<br />
+2.2 消息认证码实现方式<br />
+2.3 消息认证MAC解决的问题</p>
+</li>
+<li>
+<p>数字签名——消息到底是谁写的<br />
+3.1 签名概述<br />
+3.2 使用了签名的实例<br />
+3.3 签名解决的问题</p>
+</li>
+<li>
+<p>证书——公钥合法了<br />
+证书主要包含的内容</p>
+</li>
+</ol>
+<a id="more"></a>
+<h2 id="1-单向散列函数"><a class="markdownIt-Anchor" href="#1-单向散列函数"></a> 1 单向散列函数</h2>
+<h2 id="11-什么是单项散列函数"><a class="markdownIt-Anchor" href="#11-什么是单项散列函数"></a> 1.１ 什么是单项散列函数？</h2>
+<p>网络下载软件，或者传输文件，如何验证没有被第三方篡改呢？</p>
+<p>即是数据的的<strong>完整性</strong>（intergrity），也称<strong>一致性</strong>。</p>
+<p>单项散列函数就是生成文件“指纹”的方法。</p>
+<p><strong>单项散列函数</strong></p>
+<p><img src="http://lighklife.github.io/img/2017/%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0.png" alt="单向散列函数" /></p>
+<ul>
+<li>散列值是固定长度</li>
+</ul>
+<p>单项散列函数也称为消息摘要函数(<code>message digest function</code>)，哈希函数，杂凑函数。</p>
+<h2 id="12-单项散列函数的性质"><a class="markdownIt-Anchor" href="#12-单项散列函数的性质"></a> 1.2 单项散列函数的性质</h2>
+<ol>
+<li>根据任意长度的消息计算出固定长度的散列值。</li>
+<li>能快速计算出散列值。</li>
+<li>消息不同，散列值也不同。</li>
+<li>具备单项性。</li>
+</ol>
+<h4 id="弱靠碰撞性"><a class="markdownIt-Anchor" href="#弱靠碰撞性"></a> 弱靠碰撞性</h4>
+<p>单向散列函数都必须确保要找到和<strong>该条消息</strong>具有相同散列值的另外一条消息是非常困难的。</p>
+<h4 id="强抗碰撞性"><a class="markdownIt-Anchor" href="#强抗碰撞性"></a> 强抗碰撞性</h4>
+<p>找到散列值相同的任意两条不同消息是非常困难的。这里散列值可以是任意的。</p>
+<h3 id="13-单项散列函数实际应用"><a class="markdownIt-Anchor" href="#13-单项散列函数实际应用"></a> 1.3 单项散列函数实际应用</h3>
+<h4 id="131-检测软件是否被篡改"><a class="markdownIt-Anchor" href="#131-检测软件是否被篡改"></a> 1.3.1 检测软件是否被篡改</h4>
+<h4 id="132-基于口令的加密"><a class="markdownIt-Anchor" href="#132-基于口令的加密"></a> 1.3.2 基于口令的加密</h4>
+<p>寄予口令的加密是将口令和盐(salt，通过伪随机数生成器产生的随机值)混合后计算其散列值，然后将这个散列值作为加密的密钥。</p>
+<h4 id="133-消息认证码"><a class="markdownIt-Anchor" href="#133-消息认证码"></a> 1.3.3 消息认证码</h4>
+<p>消息认证码是将“发生者和接受者之间共享的密钥” 和 “消息” 进行混合后计算的散列值。使用消息认证码可以检测并防止通信过程中的错误，并进行认证。</p>
+<h2 id="2-消息认证码消息被正确传送了吗"><a class="markdownIt-Anchor" href="#2-消息认证码消息被正确传送了吗"></a> 2 消息认证码——消息被正确传送了吗？</h2>
+<h3 id="21-消息认证码message-authentication-code-是一种与密钥相关联的单项散列函数"><a class="markdownIt-Anchor" href="#21-消息认证码message-authentication-code-是一种与密钥相关联的单项散列函数"></a> 2.1 <strong>消息认证码</strong>（Message Authentication Code） 是一种与密钥相关联的单项散列函数。</h3>
+<p><img src="http://lighklife.github.io/img/2017/hash%E4%B8%8EMAC.jpg" alt="hash与MAC" /></p>
+<ul>
+<li>
+<p>要计算MAC值必须持有共享密钥，MAC正是利用这一性质确认完整性的。</p>
+</li>
+<li>
+<p>只有通信双方才能持有共享密钥，密钥配送问题可以使用公钥密码，Diffie-Hellman密钥交换，密钥分配中心等来解决。</p>
+</li>
+</ul>
+<h3 id="22-消息认证码实现方式"><a class="markdownIt-Anchor" href="#22-消息认证码实现方式"></a> 2.2 消息认证码实现方式</h3>
+<h4 id="使用分组密码实现"><a class="markdownIt-Anchor" href="#使用分组密码实现"></a> 使用分组密码实现</h4>
+<p><img src="http://lighklife.github.io/img/2017/CBC%E7%94%9F%E6%88%90MAC.PNG" alt="CBC生成MAC" /></p>
+<p>舍弃最后一个分组之前的所有密文，最后一组作为MAC即可。</p>
+<h4 id="使用sha-2-单向散列函数实现的-hmac"><a class="markdownIt-Anchor" href="#使用sha-2-单向散列函数实现的-hmac"></a> 使用SHA-2 单向散列函数实现的 HMAC</h4>
+<p><img src="http://lighklife.github.io/img/2017/sha2-to-MAC.PNG" alt="sha2-to-MAC" /></p>
+<h3 id="23-消息认证mac解决的问题"><a class="markdownIt-Anchor" href="#23-消息认证mac解决的问题"></a> 2.3 消息认证MAC解决的问题</h3>
+<p>消息认证码解决了完整性与伪装问题，仍然无法解决“对第三方证明”和“防否认”问题。这就需要数字签名来解决。</p>
+<h2 id="3-数字签名消息到底是谁写的"><a class="markdownIt-Anchor" href="#3-数字签名消息到底是谁写的"></a> 3　数字签名——消息到底是谁写的</h2>
+<h3 id="31-签名概述"><a class="markdownIt-Anchor" href="#31-签名概述"></a> 3.1 签名概述</h3>
+<p>设想要防否认，只要签名只能由消息发送者生产就OK了。</p>
+<p>数字签名对签名者的秘钥和验证者的秘钥进行了区分，使用验证签名无法生产签名。签名秘钥只由签名者持有。</p>
+<p>这和公钥密码有点相似了。事实上，签名就是公钥密码“反过来”实现的。<br />
+对于消息签名，速度太慢，因为每个消息的散列值是不一样的，所以一般只需要对消息的散列值进行签名就可以了。</p>
+<h3 id="32-签名实例"><a class="markdownIt-Anchor" href="#32-签名实例"></a> 3.2 签名实例</h3>
+<ol>
+<li>信息安全公告。</li>
+<li>软件下载。</li>
+<li>公钥证书。(得到合法的公钥)</li>
+<li>SSL/TLS。</li>
+</ol>
+<h3 id="33-签名解决的问题"><a class="markdownIt-Anchor" href="#33-签名解决的问题"></a> 3.3 签名解决的问题</h3>
+<p>通过对散列值签名我们可以解决完整性，篡改，伪造问题，但是用于验证签名的公钥是否是真正的发送者的呢？中间人可以用自己的私钥签名，并把自己的公钥发送给接受者。<br />
+为验证公钥是否合法，我们需要使用证书。</p>
+<h2 id="4-证书公钥合法了"><a class="markdownIt-Anchor" href="#4-证书公钥合法了"></a> 4 证书——公钥合法了</h2>
+<p>证书就是我们信任的第三方对发送者的公钥加上了他们的数字签名。相当于身份证一样的东西。这里的第三方包括例如赛门铁客等机构，也可以是自己组织内部成立的一个机构。<br />
+证书主要包含：</p>
+<ol>
+<li>证书序号。</li>
+<li>证书颁发机构。</li>
+<li>公钥所有者。</li>
+<li>SHA-1 指纹。</li>
+<li>MD５指纹。</li>
+<li>证书ID。</li>
+<li>有效期起始时间。</li>
+<li>有效期结束时间。</li>
+<li>散列算法。</li>
+<li>秘钥ID。</li>
+<li>秘钥用途。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>信息安全</category>
+      </categories>
+      <tags>
+        <tag>信息安全</tag>
+        <tag>密码技术</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>密码技术初识</title>
+    <url>/2017/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/</url>
+    <content><![CDATA[<blockquote>
+<p>版权属于出版社和作者所有。除非另有声明，没有书面许可任何人不得转载或使用整体或任何部分的内容。此文章只作为个人读书笔记使用。</p>
+</blockquote>
+<ol>
+<li>密码概述 1.1 通信过程中会有哪些主要角色? 1.2 信息安全中所面临的威胁与应对这些威胁的密码技术有什么？ 1.3 隐写术 1.4一些信息安全常识</li>
+<li>历史上的密码 <a id="more"></a></li>
+</ol>
+<h1 id="密码概述"><a class="markdownIt-Anchor" href="#密码概述"></a> 密码概述</h1>
+<h2 id="通信过程中会有哪些主要角色"><a class="markdownIt-Anchor" href="#通信过程中会有哪些主要角色"></a> 通信过程中会有哪些主要角色?</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">名称</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Alice</td>
+<td style="text-align:center">一般角色</td>
+</tr>
+<tr>
+<td style="text-align:center">Bob</td>
+<td style="text-align:center">一般角色</td>
+</tr>
+<tr>
+<td style="text-align:center">Eve</td>
+<td style="text-align:center">窃听者，可窃听通信内容</td>
+</tr>
+<tr>
+<td style="text-align:center">Mallory</td>
+<td style="text-align:center">主动攻击者，可妨碍通信、伪造消息</td>
+</tr>
+<tr>
+<td style="text-align:center">Trent</td>
+<td style="text-align:center">可信的第三方</td>
+</tr>
+<tr>
+<td style="text-align:center">Victor</td>
+<td style="text-align:center">验证者</td>
+</tr>
+</tbody>
+</table>
+<h2 id="信息安全中所面临的威胁与应对这些威胁的密码技术有什么"><a class="markdownIt-Anchor" href="#信息安全中所面临的威胁与应对这些威胁的密码技术有什么"></a> 信息安全中所面临的威胁与应对这些威胁的密码技术有什么？</h2>
+<p><img src="http://upload-images.jianshu.io/upload_images/3983351-8d2fdbb24abe90be.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="1.jpg" /></p>
+<h2 id="其他知识"><a class="markdownIt-Anchor" href="#其他知识"></a> 其他知识</h2>
+<blockquote>
+<p>我们先准备一段话，</p>
+</blockquote>
+<blockquote>
+<p>很容易看懂就可以，</p>
+</blockquote>
+<blockquote>
+<p>喜闻乐见的当然更好。</p>
+</blockquote>
+<blockquote>
+<p>欢迎你尝试将一句话嵌入在这段话中，</p>
+</blockquote>
+<blockquote>
+<p>你会发现这是一种隐写术。</p>
+</blockquote>
+<p>上面的消息影藏方式是<strong>隐写术</strong>，隐藏消息本身（而密码技术隐藏的是消息内容）。</p>
+<p>数字水印技术就利用了隐写术（一种把著作权拥有者及购买者的信息嵌入文件的技术）。</p>
+<h3 id="一些信息安全常识"><a class="markdownIt-Anchor" href="#一些信息安全常识"></a> 一些信息安全常识：</h3>
+<ul>
+<li>不要使用保密的密码算法。（开发高强度密码算法极其困难，自己的密码算法一旦暴露很容易被破解）</li>
+<li>使用低强度的密码比不使用任何密码更危险。（麻痹大意）</li>
+<li>任何密码总有一天都会被破解。（一次性密码本除外）</li>
+<li>密码是指信息安全的一部分。（最脆弱的环节往往是人类自己----社会工程学）</li>
+</ul>
+<h1 id="历史上的密码"><a class="markdownIt-Anchor" href="#历史上的密码"></a> 历史上的密码</h1>
+<h2 id="凯撒密码字母代换"><a class="markdownIt-Anchor" href="#凯撒密码字母代换"></a> 凯撒密码（字母代换）</h2>
+<p><img src="http://upload-images.jianshu.io/upload_images/3983351-1da3a5ef1c198468.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="凯撒密码.jpg" /></p>
+<p>将一个字母表向指定方向平移N位，解密反之，N为密钥 。</p>
+<blockquote>
+<p>密钥只可能是0-25共26个，用1-25每个数作为密钥尝试解密，很容易发现明文，从而得出密钥是几。（暴力破解）</p>
+</blockquote>
+<h2 id="简单替换密码"><a class="markdownIt-Anchor" href="#简单替换密码"></a> 简单替换密码</h2>
+<p><img src="http://upload-images.jianshu.io/upload_images/3983351-1fcc70aec5f4f862.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="简单替换密码.jpg" /></p>
+<p>两个字母表中字母之间随机一一对应， 密钥是替换表。</p>
+<blockquote>
+<p>密钥空间是 26！= 2^88。所以考虑使用（频率破解）。</p>
+</blockquote>
+<h1 id="对称密码"><a class="markdownIt-Anchor" href="#对称密码"></a> 对称密码</h1>
+<ul>
+<li>DES（Data Encryption Standard）（不再推荐）</li>
+<li>AES（Advanced Encryption Standard） （应该使用）</li>
+</ul>
+<h2 id="最新对称密码标准-aes"><a class="markdownIt-Anchor" href="#最新对称密码标准-aes"></a> 最新对称密码标准----AES</h2>
+<p><code>AES</code> 目前采用的是<code>Rijndael</code> 算法，<code>Rijndael</code> 的分组长度可以是以32bit为单位在128到256范围内选择。目前AES 规定分组长度只能有128,192,256三种。</p>
+<p>AES 一轮的步骤：</p>
+<ul>
+<li>加密：SubBytes —&gt; ShiftRows —&gt; MixColumns —&gt; AddRoundKey</li>
+<li>解密：AddRoundKey —&gt; InvMixColumns —&gt; InvShiftRows —&gt; InvSubBytes</li>
+</ul>
+<p>其中步骤的含义为：</p>
+<ol>
+<li>SubBytes： 每个字节的值（0-255的任意值）为索引，从一张拥有256个值的替换表（S-Box）中查找对应的值处理。将一个1字节的值替换成另一个1字节的值。</li>
+<li>ShiftRows：将4个字节为单位的行（Row）按照一定的规则左平移。</li>
+<li>MixColumns：将一个4字节的值进行比特运算，变成另一个4字节的值。</li>
+<li>AddRoundKey ：将MixColumns的输出与轮密钥XOR。</li>
+</ol>
+<h2 id="对称密码的分组模式"><a class="markdownIt-Anchor" href="#对称密码的分组模式"></a> 对称密码的分组模式</h2>
+<p><strong>模式</strong>：AES 和 DES 都是分组密码，分组密码一次只能加密固定长度的明文。如果需要加密任意长度的明文，就需要对分组密码进行迭代，迭代的方法就称为&quot;模式&quot;。</p>
+<h3 id="电子密码本模式ecb"><a class="markdownIt-Anchor" href="#电子密码本模式ecb"></a> 电子密码本模式（ECB）</h3>
+<p><img src="http://lighklife.github.io/img/2017/ECB%E6%A8%A1%E5%BC%8F.jpg" alt="ECB模式" /></p>
+<p>此方法过于简单，不建议使用。</p>
+<h3 id="密文分组链接模式cbc"><a class="markdownIt-Anchor" href="#密文分组链接模式cbc"></a> 密文分组链接模式（CBC）</h3>
+<p><img src="http://lighklife.github.io/img/2017/CBC%E6%A8%A1%E5%BC%8F.jpg" alt="CBC模式" /></p>
+<ul>
+<li>初始化向量是一个随机产生的比特序列，IV的生成算法要足够优秀。</li>
+<li>初始化向量与明文分组XOR后加密生成第一个密文分组，之后的迭代都是将当前生成的密文分组与下一个明文分组XOR后加密生成下一个密文分组。</li>
+</ul>
+<h3 id="密文反馈模式-cfb"><a class="markdownIt-Anchor" href="#密文反馈模式-cfb"></a> 密文反馈模式 （CFB）</h3>
+<p><img src="http://lighklife.github.io/img/2017/CFB%E6%A8%A1%E5%BC%8F.jpg" alt="CFB模式" /></p>
+<ul>
+<li>初始化向量加密后与第一个明文分组XOR生成第一个密文分组，之后都是当前的密文分组加密后与下一明文分组XOR生成下一个密文分组。</li>
+<li>密文反馈模式CFB 与 密文分组连接模式CBC的区别在于，密文反馈模式是先加密再XOR，密文分组连接模式是先XOR 再加密。</li>
+</ul>
+<h3 id="输出反馈模式ofb"><a class="markdownIt-Anchor" href="#输出反馈模式ofb"></a> 输出反馈模式（OFB）</h3>
+<p><img src="http://lighklife.github.io/img/2017/OFB.jpg" alt="OFB" /></p>
+<ul>
+<li>IV 加密的输出与第一个明文分组XOR 得到第一个密文分组，将加密后的IV 再加密与下一个明文分组XOR得到下一个密文分组。</li>
+<li>不断对IV 加密 ,加密,加密。</li>
+</ul>
+<h3 id="计数器模式-ctr"><a class="markdownIt-Anchor" href="#计数器模式-ctr"></a> 计数器模式 （CTR）</h3>
+<p><img src="http://lighklife.github.io/img/2017/CTR.jpg" alt="CTR" /></p>
+<ul>
+<li>计数器每次+1再加密与当前分组XOR得到当前分组密文。</li>
+</ul>
+<h1 id="公钥密码"><a class="markdownIt-Anchor" href="#公钥密码"></a> 公钥密码</h1>
+<h2 id="密钥配送问题"><a class="markdownIt-Anchor" href="#密钥配送问题"></a> 密钥配送问题</h2>
+<p>使用对称密码，A 加密数据后发送给B , B 需要相同的密钥才能解密，这样A需要把密钥发送给B ,这个过程密钥被截获就可以解密所有数据。</p>
+<p>密钥配送问题：对称密码的密钥需要被发送，但又不能直接被发送。</p>
+<p>解决方式：</p>
+<ol>
+<li>通过事先共享密钥解决。</li>
+<li>通过密钥分配中心解决。</li>
+<li>通过 Diffie-Hellman 密钥交换来解决。</li>
+<li>通过公钥密码来解决。</li>
+</ol>
+<h2 id="rsa-加密与解密"><a class="markdownIt-Anchor" href="#rsa-加密与解密"></a> RSA 加密与解密</h2>
+<p><img src="http://lighklife.github.io/img/2017/RSA%E7%9A%84%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86.jpg" alt="RSA的加密与解密" /></p>
+<p>RSA 利用了大整数分解质因数问题的困难度保证机密性。公钥密码一般都是利用数学上的困难问题。</p>
+<h2 id="rsa生成密钥对"><a class="markdownIt-Anchor" href="#rsa生成密钥对"></a> RSA生成密钥对</h2>
+<p><strong>公钥</strong>： N ，E</p>
+<p><strong>私钥</strong>： N ，D</p>
+<h3 id="求公私钥的公共部分-n"><a class="markdownIt-Anchor" href="#求公私钥的公共部分-n"></a> 求公私钥的公共部分 N</h3>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi><mo>=</mo><mi>p</mi><mo>∗</mo><mi>q</mi><mi mathvariant="normal">（</mi><mi>p</mi><mi mathvariant="normal">、</mi><mi>q</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">大</mi><mi mathvariant="normal">质</mi><mi mathvariant="normal">数</mi><mi mathvariant="normal">）</mi></mrow><annotation encoding="application/x-tex">N = p * q（p、q 为大质数） 
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.6597200000000001em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">q</span><span class="mord cjk_fallback">（</span><span class="mord mathdefault">p</span><span class="mord cjk_fallback">、</span><span class="mord mathdefault" style="margin-right:0.03588em;">q</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">大</span><span class="mord cjk_fallback">质</span><span class="mord cjk_fallback">数</span><span class="mord cjk_fallback">）</span></span></span></span></span></p>
+<h3 id="求中间数-l"><a class="markdownIt-Anchor" href="#求中间数-l"></a> 求中间数 L</h3>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>L</mi><mo>=</mo><mi>l</mi><mi>c</mi><mi>m</mi><mo stretchy="false">(</mo><mi>p</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mo>∗</mo><mo stretchy="false">(</mo><mi>q</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">L = lcm (p-1) * (q-1) 
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">c</span><span class="mord mathdefault">m</span><span class="mopen">(</span><span class="mord mathdefault">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.03588em;">q</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo stretchy="false">(</mo><mi>L</mi><mi mathvariant="normal">是</mi><mi>p</mi><mo>−</mo><mn>1</mn><mi mathvariant="normal">和</mi><mi>q</mi><mo>−</mo><mn>1</mn><mi mathvariant="normal">的</mi><mi mathvariant="normal">最</mi><mi mathvariant="normal">小</mi><mi mathvariant="normal">公</mi><mi mathvariant="normal">倍</mi><mi mathvariant="normal">数</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(L 是 p-1 和 q-1的最小公倍数) 
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault">L</span><span class="mord cjk_fallback">是</span><span class="mord mathdefault">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">1</span><span class="mord cjk_fallback">和</span><span class="mord mathdefault" style="margin-right:0.03588em;">q</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">最</span><span class="mord cjk_fallback">小</span><span class="mord cjk_fallback">公</span><span class="mord cjk_fallback">倍</span><span class="mord cjk_fallback">数</span><span class="mclose">)</span></span></span></span></span></p>
+<h3 id="求公钥中的-e"><a class="markdownIt-Anchor" href="#求公钥中的-e"></a> 求公钥中的 E</h3>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><mo>&lt;</mo><mi>E</mi><mo>&lt;</mo><mi>L</mi></mrow><annotation encoding="application/x-tex">1&lt;E&lt;L 
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68354em;vertical-align:-0.0391em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.72243em;vertical-align:-0.0391em;"></span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">L</span></span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi><mi>c</mi><mi>d</mi><mo stretchy="false">(</mo><mi>E</mi><mo separator="true">,</mo><mi>L</mi><mo stretchy="false">)</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">gcd(E, L) = 1 
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">c</span><span class="mord mathdefault">d</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">L</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span></span></p>
+<ul>
+<li>求最大公约数可以使用辗转相除法，候选E的生成可以使用伪随机数生成器。</li>
+<li>求最大公约数可以使用辗转相除法。</li>
+</ul>
+<h3 id="求私钥中的-d"><a class="markdownIt-Anchor" href="#求私钥中的-d"></a> 求私钥中的 D</h3>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><mo>&lt;</mo><mi>D</mi><mo>&lt;</mo><mi>L</mi></mrow><annotation encoding="application/x-tex">1 &lt; D &lt; L 
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68354em;vertical-align:-0.0391em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.72243em;vertical-align:-0.0391em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">L</span></span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo stretchy="false">(</mo><mi>E</mi><mo>∗</mo><mi>D</mi><mo stretchy="false">)</mo><mi>m</mi><mi>o</mi><mi>d</mi><mi>L</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">(E * D) mod L =1 
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">D</span><span class="mclose">)</span><span class="mord mathdefault">m</span><span class="mord mathdefault">o</span><span class="mord mathdefault">d</span><span class="mord mathdefault">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span></span></p>
+<ul>
+<li>其中 <code>(E*D)mod L = 1</code>保证了对密文解密时可以得到原来的明文。</li>
+</ul>
+<h1 id="混合密码系统"><a class="markdownIt-Anchor" href="#混合密码系统"></a> 混合密码系统</h1>
+<ul>
+<li>
+<p>对称加密存在密钥配送问题。</p>
+</li>
+<li>
+<p>公钥加密耗费资源。</p>
+</li>
+<li>
+<p>对称密码 + 公钥密码 + 随机数生成器 -----组合称混合密码系统，集成了对称密码消耗小，公钥密码解决密钥配送的优势。</p>
+<p><img src="http://lighklife.github.io/img/2017/%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81%E7%B3%BB%E7%BB%9F.jpg" alt="混合密码系统" /></p>
+<p><img src="http://lighklife.github.io/img/2017/%E8%A7%A3%E5%AF%86%E6%B7%B7%E5%90%88%E5%AF%86%E9%92%A5.jpg" alt="解密混合密钥" /></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>信息安全</category>
+      </categories>
+      <tags>
+        <tag>信息安全</tag>
+        <tag>密码技术</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>密码技术总结</title>
+    <url>/2017/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<pre><code>- [各个密码技术解决的问题与联系](#各个密码技术解决的问题与联系)
+- [密码技术就是一直“压缩”技术](#密码技术就是一直压缩技术)
+</code></pre>
+<!-- /TOC -->
+<a id="more"></a>
+<h2 id="各个密码技术解决的问题与联系"><a class="markdownIt-Anchor" href="#各个密码技术解决的问题与联系"></a> 各个密码技术解决的问题与联系</h2>
+<p><img src="http://lighklife.github.io/img/2017/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%B7%A5%E5%85%B7%E7%AE%B1.png" alt="密码学家的工具箱" /></p>
+<h2 id="密码技术就是一直压缩技术"><a class="markdownIt-Anchor" href="#密码技术就是一直压缩技术"></a> 密码技术就是一直“压缩”技术</h2>
+<p><img src="http://lighklife.github.io/img/2017/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E5%B0%B1%E6%98%AF%E2%80%9C%E5%8E%8B%E7%BC%A9%E2%80%9D.png" alt="密码技术就是“压缩”" /></p>
+]]></content>
+      <categories>
+        <category>信息安全</category>
+      </categories>
+      <tags>
+        <tag>信息安全</tag>
+        <tag>密码技术</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>密码技术的优美应用</title>
+    <url>/2017/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E7%9A%84%E4%BC%98%E7%BE%8E%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<ol>
+<li>PGP 加密软件</li>
+<li>SSL/TLS<br />
+2.1 HTTPS 是在TLS/SSL 上承载HTTP.<br />
+2.2 TLS/SSL　保护其他协议<br />
+2.3 TLS的层次结构</li>
+</ol>
+<a id="more"></a>
+<h2 id="1-pgp-加密软件"><a class="markdownIt-Anchor" href="#1-pgp-加密软件"></a> 1. PGP 加密软件</h2>
+<p>PGP 是　pretty Good Privacy.<br />
+<strong>PGP加密生成数字签名并认证</strong></p>
+<p><img src="http://lighklife.github.io/img/2017/PGP%E5%8A%A0%E5%AF%86%E7%94%9F%E6%88%90%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E5%B9%B6%E8%AE%A4%E8%AF%81.PNG" alt="PGP加密生成数字签名并认证" /></p>
+<p><strong>PGP解密并验证数字签名并认证</strong></p>
+<p><img src="http://lighklife.github.io/img/2017/PGP%E8%A7%A3%E5%AF%86%E5%B9%B6%E9%AA%8C%E8%AF%81%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E5%B9%B6%E8%AE%A4%E8%AF%81.PNG" alt="PGP解密并验证数字签名并认证" /></p>
+<p><strong>PGB中数据的整合分离</strong></p>
+<p><img src="http://lighklife.github.io/img/2017/PGB%E4%B8%AD%E6%95%B0%E6%8D%AE%E7%9A%84%E6%95%B4%E5%90%88%E5%88%86%E7%A6%BB.PNG" alt="PGB中数据的整合分离" /></p>
+<h2 id="2ssltls"><a class="markdownIt-Anchor" href="#2ssltls"></a> 2.SSL/TLS</h2>
+<p>TLS是SSL的后续版本。</p>
+<h3 id="21-https-是在tlsssl-上承载http"><a class="markdownIt-Anchor" href="#21-https-是在tlsssl-上承载http"></a> 2.1 HTTPS 是在TLS/SSL 上承载HTTP.</h3>
+<p><img src="http://lighklife.github.io/img/2017/HTTPS.png" alt="HTTPS" /></p>
+<p><strong>HTTPS作用</strong></p>
+<ol>
+<li>通信过程不能被监听。（数据被混合密码系统加密，保证机密性）</li>
+<li>通信过程不能被篡改。（保证完整性）</li>
+<li>确认是在真正的通信对象。（认证）</li>
+</ol>
+<h3 id="22-tlsssl-保护其他协议"><a class="markdownIt-Anchor" href="#22-tlsssl-保护其他协议"></a> 2.2 TLS/SSL　保护其他协议</h3>
+<p><img src="http://lighklife.github.io/img/2017/SSL-TLS%E4%BF%9D%E6%8A%A4%E5%85%B6%E4%BB%96%E5%8D%8F%E8%AE%AE.png" alt="TLS/SSL　保护其他协议" /></p>
+<h3 id="23-tls的层次结构"><a class="markdownIt-Anchor" href="#23-tls的层次结构"></a> 2.3 TLS的层次结构</h3>
+<p><img src="http://lighklife.github.io/img/2017/TLS%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.png" alt="TLS的层次结构" /></p>
+<p><strong>TLS 握手协议</strong><br />
+握手协议分为：握手协议，密码规格变更协议，警告协议和应用数据协议。<br />
+握手协议负责客户端与服务器端协商决定密码算法和共享秘钥。</p>
+<p><img src="http://lighklife.github.io/img/2017/STL%E6%8F%A1%E6%89%8B.jpg" alt="TLS记录协议的处理过程" /></p>
+<p><strong>记录协议负责消息的“压缩”，“加密”，“数据认证”。</strong><br />
+<img src="http://lighklife.github.io/img/2017/TLS%E8%AE%B0%E5%BD%95%E5%8D%8F%E8%AE%AE%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B.png" alt="TLS记录协议的处理过程" /></p>
+]]></content>
+      <categories>
+        <category>信息安全</category>
+      </categories>
+      <tags>
+        <tag>信息安全</tag>
+        <tag>密码技术</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>秘钥与随机数</title>
+    <url>/2017/%E7%A7%98%E9%92%A5%E4%B8%8E%E9%9A%8F%E6%9C%BA%E6%95%B0/</url>
+    <content><![CDATA[<ol>
+<li>秘钥</li>
+<li>随机数<br />
+2.1 随机数的性质<br />
+2.2 随机数的生产方法</li>
+</ol>
+<a id="more"></a>
+<h2 id="1秘钥"><a class="markdownIt-Anchor" href="#1秘钥"></a> 1.秘钥</h2>
+<ol>
+<li>
+<p>Diffie-Hellman 解决秘钥配送问题<br />
+<img src="http://lighklife.github.io/img/2017/Diffie-Hellman.png" alt="Diffie-Hellman 秘钥交换" /></p>
+</li>
+<li>
+<p>PEB　加密解密</p>
+</li>
+</ol>
+<p><img src="http://lighklife.github.io/img/2017/peb%E5%8A%A0%E5%AF%86.png" alt="PEB 加密" /><br />
+<img src="http://lighklife.github.io/img/2017/peb%E8%A7%A3%E5%AF%86.png" alt="PEB 加密" /></p>
+<h2 id="2随机数"><a class="markdownIt-Anchor" href="#2随机数"></a> 2.随机数</h2>
+<h3 id="21-随机数的性质"><a class="markdownIt-Anchor" href="#21-随机数的性质"></a> 2.1 随机数的性质</h3>
+<p><img src="http://lighklife.github.io/img/2017/%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%9A%84%E6%80%A7%E8%B4%A8.png" alt="随机数的性质" /></p>
+<h2 id="22-随机数的生产方法"><a class="markdownIt-Anchor" href="#22-随机数的生产方法"></a> 2.2 随机数的生产方法</h2>
+<p><strong>线性同余</strong></p>
+<p><img src="http://lighklife.github.io/img/2017/%E7%BA%BF%E6%80%A7%E5%90%8C%E4%BD%99.png" alt="线性同余" /></p>
+<p><strong>单向散列函数</strong></p>
+<p><img src="http://lighklife.github.io/img/2017/%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0.png" alt="单向散列函数" /></p>
+<p><strong>密码法</strong></p>
+<p><img src="http://lighklife.github.io/img/2017/%E5%AF%86%E7%A0%81%E6%B3%95.png" alt="密码法" /></p>
+<p><strong>ANSI X9.17</strong></p>
+<p>![ANSI x9.17](<a href="http://lighklife.github.io/img/2017/ANSI">http://lighklife.github.io/img/2017/ANSI</a> x9.17.png)</p>
+]]></content>
+      <categories>
+        <category>信息安全</category>
+      </categories>
+      <tags>
+        <tag>信息安全</tag>
+        <tag>密码技术</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>密码技术总结</title>
+    <url>/2018/%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF%E7%BB%98%E6%80%BB/</url>
+    <content><![CDATA[<ol>
+<li>从明文通信到对称加密</li>
+<li>非对称加密（公钥加密）</li>
+<li>混合密码系统</li>
+<li>单向散列函数——文件被修改了吗？</li>
+<li>消息认证码——消息是伪装者发的吗？</li>
+<li>数字签名——消息到底是谁写的</li>
+<li>证书——公钥合法了</li>
+</ol>
+<a id="more"></a>
+<h2 id="从明文通信到对称加密"><a class="markdownIt-Anchor" href="#从明文通信到对称加密"></a> 从明文通信到对称加密</h2>
+<h3 id="明文通信"><a class="markdownIt-Anchor" href="#明文通信"></a> 明文通信</h3>
+<p>为什么要加密呢？不妨先看看明文通信</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E6%9C%AA%E5%8A%A0%E5%AF%86%E7%9A%84%E5%8D%B1%E9%99%A9.png" alt="未加密的危险" /></p>
+<p>Eve 可以直接窃听到Alice与Bob的通信过程，通过抓包就可以查看到通信内容，如果邮件内容是羞答答的，怎么可以被其他人看到呢？（邪魅微笑）</p>
+<p>在逼格满满的咖啡厅，你正在愉快的刷着微博，逛着知乎，浏览豆瓣，你以为你连着免费WiFi爽歪歪，</p>
+<p>图，喝咖啡，玩手机</p>
+<p>然后其实被他笔记本造的WiFi，</p>
+<p>图，黑客</p>
+<p>顺便一提，关于抓包，现成的抓包工具很多，如 <a href="https://www.wireshark.org/">wireshark</a>，<a href="https://www.charlesproxy.com/">charles</a> 等，这里有一篇使用charles抓APP包的文章，要不要 <a href="https://lighklife.github.io/2017/08/15/2017/Https%E6%8A%93%E5%8C%85/">看看</a></p>
+<h3 id="开始加密"><a class="markdownIt-Anchor" href="#开始加密"></a> 开始加密</h3>
+<h4 id="凯撒密码字母代换"><a class="markdownIt-Anchor" href="#凯撒密码字母代换"></a> 凯撒密码（字母代换）</h4>
+<p><img src="http://upload-images.jianshu.io/upload_images/3983351-1da3a5ef1c198468.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="凯撒密码.jpg" /></p>
+<p>将一个字母表向指定方向平移N位，解密反之，N为密钥 。</p>
+<blockquote>
+<p>密钥只可能是0-25共26个，用1-25每个数作为密钥尝试解密，很容易发现明文，从而得出密钥是几。（暴力破解）</p>
+</blockquote>
+<h4 id="简单替换密码"><a class="markdownIt-Anchor" href="#简单替换密码"></a> 简单替换密码</h4>
+<p><img src="http://upload-images.jianshu.io/upload_images/3983351-1fcc70aec5f4f862.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="简单替换密码.jpg" /></p>
+<p>两个字母表中字母之间随机一一对应， 密钥是替换表。</p>
+<blockquote>
+<p>密钥空间是 26！= 2^88。所以考虑使用（频率破解）。</p>
+</blockquote>
+<h4 id="对称密码标准"><a class="markdownIt-Anchor" href="#对称密码标准"></a> 对称密码标准</h4>
+<ul>
+<li>DES（Data Encryption Standard）（不再推荐）</li>
+<li>AES（Advanced Encryption Standard） （应该使用）</li>
+</ul>
+<p><code>AES</code> 目前采用的是<code>Rijndael</code> 算法，<code>Rijndael</code> 的分组长度可以是以32bit为单位在128到256范围内选择。目前AES 规定分组长度只能有128,192,256三种。</p>
+<p>AES 一轮的步骤：</p>
+<ul>
+<li>加密：SubBytes —&gt; ShiftRows —&gt; MixColumns —&gt; AddRoundKey</li>
+<li>解密：AddRoundKey —&gt; InvMixColumns —&gt; InvShiftRows —&gt; InvSubBytes</li>
+</ul>
+<p>其中步骤的含义为：</p>
+<ol>
+<li>SubBytes： 每个字节的值（0-255的任意值）为索引，从一张拥有256个值的替换表（S-Box）中查找对应的值处理。将一个1字节的值替换成另一个1字节的值。</li>
+<li>ShiftRows：将4个字节为单位的行（Row）按照一定的规则左平移。</li>
+<li>MixColumns：将一个4字节的值进行比特运算，变成另一个4字节的值。</li>
+<li>AddRoundKey ：将MixColumns的输出与轮密钥XOR。</li>
+</ol>
+<h3 id="对称加密"><a class="markdownIt-Anchor" href="#对称加密"></a> 对称加密</h3>
+<p>Alice 和 Bob 使用相同的秘钥来加解密消息，也就是<strong>对称加密</strong>，上面提到的加密算法都是对称加密。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E5%9B%BE%E7%A4%BA.png" alt="对称加密图示" /></p>
+<p>这样，即使第三者 Eve 窃听到通信过程，那么 Eve 也只能看到奇奇怪怪符号组成的密文</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E5%8A%A0%E5%AF%86%E4%B9%8B%E5%90%8E%E7%9A%84%E6%83%85%E5%86%B5.png" alt="加密之后的情况" /></p>
+<p>这样Alice和Bob就可以放心的互相通信了吗？对啊！当然不是，这只是解决了机密性的问题，对称加密的密钥需要被发送给对方，对方才能解密，但直接发送，秘钥也会被窃听，这就是秘钥配送问题。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-1-%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%9A%84%E7%BC%BA%E9%99%B7.PNG" alt="存在的缺陷" /></p>
+<h3 id="解决秘钥配送"><a class="markdownIt-Anchor" href="#解决秘钥配送"></a> 解决秘钥配送</h3>
+<ul>
+<li>事先当面将秘钥给对方，不通过网络传输秘钥，避免了被窃听的机会；</li>
+<li>通过密钥分配中心解决；</li>
+<li>通过 Diffie-Hellman 密钥交换来解决；</li>
+<li>通过公钥密码来解决。</li>
+</ul>
+<p><img src="http://lighklife.github.io/img/2017/Diffie-Hellman.png" alt="Diffie-Hellman" /></p>
+<h2 id="非对称加密公钥加密"><a class="markdownIt-Anchor" href="#非对称加密公钥加密"></a> 非对称加密（公钥加密）</h2>
+<h3 id="简述"><a class="markdownIt-Anchor" href="#简述"></a> 简述</h3>
+<p>公钥加密又叫非对称加密，这类加密算法中存一对秘钥：</p>
+<ul>
+<li>公钥——用来加密信息，公开给任何人</li>
+<li>私钥——用来解密信息，自己私藏</li>
+</ul>
+<p>公钥和私钥匙是天生一对，一个确定的公钥加密的信息，只有他的私钥才能解密信息。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E5%85%AC%E9%92%A5%E5%8A%A0%E5%AF%86%E6%A0%B7%E5%BC%8F.png" alt="公钥加密样式" /></p>
+<p>使用公钥加密对信息进行加密通信的流程如下：</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E5%85%AC%E9%92%A5%E5%8A%A0%E5%AF%86.png" alt="公钥加密" /></p>
+<h3 id="公钥算法rsa"><a class="markdownIt-Anchor" href="#公钥算法rsa"></a> 公钥算法——RSA</h3>
+<p>RSA是一种非对称加密算法，是1977年由<a href="https://zh.wikipedia.org/wiki/%E7%BD%97%E7%BA%B3%E5%BE%B7%C2%B7%E6%9D%8E%E7%BB%B4%E6%96%AF%E7%89%B9">罗纳德·李维斯特</a>（Ron Rivest）、<a href="https://zh.wikipedia.org/wiki/%E9%98%BF%E8%BF%AA%C2%B7%E8%90%A8%E8%8E%AB%E5%B0%94">阿迪·萨莫尔</a>（Adi Shamir）和<a href="https://zh.wikipedia.org/wiki/%E4%BC%A6%E7%BA%B3%E5%BE%B7%C2%B7%E9%98%BF%E5%BE%B7%E6%9B%BC">伦纳德·阿德曼</a>（Leonard Adleman）一起提出的，并以他们名字的首字母命名。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">name</th>
+<th style="text-align:left">VALUE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>秘钥</strong></td>
+<td style="text-align:left">数 E 和 数 N</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>秘钥</strong></td>
+<td style="text-align:left">数 D 和 数 N</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>加密过程</strong></td>
+<td style="text-align:left">$$ 密文 = (明文^E) mod(N )$$</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>解密过程</strong></td>
+<td style="text-align:left">$$ 明文 = (密文^D) mod (N )$$</td>
+</tr>
+</tbody>
+</table>
+<p><img src="http://lighklife.github.io/img/2017/RSA%E7%9A%84%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86.jpg" alt="RSA加密" /><br />
+原理详情：</p>
+<p><a href="http://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html">阮一峰的网络日志——RSA算法原理（一）</a></p>
+<p><a href="http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html">阮一峰的网络日志——RSA算法原理（二）</a></p>
+<h3 id="缺陷"><a class="markdownIt-Anchor" href="#缺陷"></a> 缺陷</h3>
+<p>加密运算强度大，费时间，比如RSA加密过程是对明文求指数运算后再取模，这显然比AES运算量要大。有何优化方案吗？有，结合对称加密与公钥加密。</p>
+<h2 id="混合密码系统"><a class="markdownIt-Anchor" href="#混合密码系统"></a> 混合密码系统</h2>
+<h3 id="加密"><a class="markdownIt-Anchor" href="#加密"></a> 加密</h3>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E6%B7%B7%E5%90%88%E5%8A%A0%E5%AF%86.png" alt="混合加密" /></p>
+<h3 id="解密"><a class="markdownIt-Anchor" href="#解密"></a> 解密</h3>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81%E8%A7%A3%E5%AF%86.png" alt="混合密码解密" /></p>
+<h2 id="单向散列函数文件被修改了吗"><a class="markdownIt-Anchor" href="#单向散列函数文件被修改了吗"></a> 单向散列函数——文件被修改了吗？</h2>
+<h3 id="概述"><a class="markdownIt-Anchor" href="#概述"></a> 概述</h3>
+<p>网络下载软件，或者传输文件，如何验证没有被第三方篡改呢？即是数据的的<strong>完整性</strong>（intergrity），也称<strong>一致性</strong>。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E7%A1%AE%E8%AE%A4%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%8C%E6%95%B4%E6%80%A7.png" alt="确认文件的完整性" /></p>
+<h3 id=""><a class="markdownIt-Anchor" href="#"></a> </h3>
+<p>单项散列函数就是生成文件“指纹”的方法。单项散列函数也称为消息摘要函数(<code>message digest function</code>)，哈希函数，杂凑函数。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0%E7%A1%AE%E4%BF%9D%E6%96%87%E4%BB%B6%E4%B8%80%E8%87%B4%E6%80%A7.png" alt="单向散列函数确保文件一致性" /></p>
+<h3 id="性质"><a class="markdownIt-Anchor" href="#性质"></a> 性质</h3>
+<ol>
+<li>根据任意长度的消息计算出固定长度的散列值。</li>
+<li>能快速计算出散列值。</li>
+<li>抗碰撞性，消息不同，散列值也不同。</li>
+<li>具备单向性,根据散列值无法计算出消息。</li>
+</ol>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E6%95%A3%E5%88%97%E5%80%BC%E9%95%BF%E5%BA%A6%E5%9B%BA%E5%AE%9A.png" alt="散列值长度固定" /></p>
+<h3 id="举例"><a class="markdownIt-Anchor" href="#举例"></a> 举例</h3>
+<h4 id="md5"><a class="markdownIt-Anchor" href="#md5"></a> MD5</h4>
+<p>MD5(Message Digest)：一般128位的MD5散列被表示为32位十六进制数字，例如</p>
+<p><code>9e107d9d372bb6826bd81d3542a419d6 = MD5(&quot;The quick brown fox jumps over the lazy dog&quot;);</code></p>
+<p>其强抗碰撞性已经被攻破，已经不再安全。</p>
+<h4 id="sha-123-secure-hash-algorithm"><a class="markdownIt-Anchor" href="#sha-123-secure-hash-algorithm"></a> SHA-1/2/3 (Secure Hash Algorithm)</h4>
+<p>sha1: 已经被列为“可谨慎运用的密码清单”，为了保持兼容性才使用；其强抗碰撞性已经 <a href="https://www.zhihu.com/question/56234281">被攻破</a>。</p>
+<p>sha2：由 SHA-256 和 SHA-512衍生出6种版本，显然鉴于内部状态，SHA-256系列更适合32位CPU。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>输出长度</th>
+<th>内部状态长度</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SHA-224</td>
+<td>224</td>
+<td>32 * 8 = 256</td>
+<td>将SHA-256的结果截掉32比特</td>
+</tr>
+<tr>
+<td>SHA-256</td>
+<td>256</td>
+<td>32 * 8 = 256</td>
+<td></td>
+</tr>
+<tr>
+<td>SHA-521/224</td>
+<td>224</td>
+<td>64 * 8 = 512</td>
+<td>将SHA-512的结果截掉288比特</td>
+</tr>
+<tr>
+<td>SHA-512/256</td>
+<td>256</td>
+<td>64 * 8 = 512</td>
+<td>将SHA-512的结果截掉256比特</td>
+</tr>
+<tr>
+<td>SHA-384</td>
+<td>384</td>
+<td>64 * 8 = 512</td>
+<td>将SHA-512的结果截掉128比特</td>
+</tr>
+<tr>
+<td>SHA-512</td>
+<td>512</td>
+<td>64 * 8 = 512</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>sha3：2012年选拔出名为Keccak的算法作为sha3，结构完全不同sha-2，适用各种设备，硬件上实现性能高，更安全。</p>
+<h3 id="不能解的问题"><a class="markdownIt-Anchor" href="#不能解的问题"></a> 不能解的问题</h3>
+<p>使用单向散列函数能实现完整性的检察，但是有些如果主动攻击者Mallory伪装成Alice，向Bob同时发送了消息和散列值。这时Bob能通过单向散列函数检察消息的完整性，但是却没能识别出这条消息是Mallory<strong>伪装</strong>成Bob发送的，无法被认证。</p>
+<h2 id="消息认证码消息是伪装者发的吗"><a class="markdownIt-Anchor" href="#消息认证码消息是伪装者发的吗"></a> 消息认证码——消息是伪装者发的吗？</h2>
+<p>消息认证码（Message Authentication Code） 是一种与密钥相关联的单项散列函数。</p>
+<p><img src="http://lighklife.github.io/img/2017/hash%E4%B8%8EMAC.jpg" alt="hash与MAC" /></p>
+<ul>
+<li>
+<p>要计算MAC值必须持有共享密钥，MAC正是利用这一性质确认完整性的。</p>
+</li>
+<li>
+<p>只有通信双方才能持有共享密钥，密钥配送问题可以使用公钥密码，Diffie-Hellman密钥交换，密钥分配中心等来解决。</p>
+</li>
+</ul>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81%E7%A0%81.png" alt="消息认证码" /></p>
+<h3 id="无法解决的问题"><a class="markdownIt-Anchor" href="#无法解决的问题"></a> 无法解决的问题</h3>
+<p>重放攻击</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E9%87%8D%E6%94%BE%E6%94%BB%E5%87%BB.png" alt="重放攻击" /></p>
+<p>消息认证码解决了完整性与伪装问题，仍然无法解决“对第三方证明”和“防否认”问题。这就需要数字签名来解决。</p>
+<h2 id="数字签名消息到底是谁写的"><a class="markdownIt-Anchor" href="#数字签名消息到底是谁写的"></a> 数字签名——消息到底是谁写的</h2>
+<h3 id="概述-2"><a class="markdownIt-Anchor" href="#概述-2"></a> 概述</h3>
+<p>设想要防否认，只要签名只能由消息发送者生产就OK了。</p>
+<p>数字签名对签名者的秘钥和验证者的秘钥进行了区分，使用验证签名无法生产签名。签名秘钥只由签名者持有。</p>
+<p>这和公钥密码有点相似了。事实上，签名就是公钥密码“反过来”实现的。<br />
+对于消息签名，速度太慢，因为每个消息的散列值是不一样的，所以一般只需要对消息的散列值进行签名就可以了。</p>
+<p><img src="http://lighklife.github.io/img/2018/2018-3-%E7%AD%BE%E5%90%8D%E6%97%B6%E9%97%B4%E5%9B%BE.png" alt="签名时间图" /></p>
+<h3 id="应用举例"><a class="markdownIt-Anchor" href="#应用举例"></a> 应用举例</h3>
+<ol>
+<li>信息安全公告。</li>
+<li>软件下载。</li>
+<li>公钥证书。(得到合法的公钥)</li>
+<li>SSL/TLS。</li>
+</ol>
+<h3 id="无法解决的问题-2"><a class="markdownIt-Anchor" href="#无法解决的问题-2"></a> 无法解决的问题</h3>
+<p>通过对散列值签名我们可以解决完整性，篡改，伪造问题，但是用于验证签名的公钥是否是真正的发送者的呢？中间人可以用自己的私钥签名，并把自己的公钥发送给接受者。<br />
+为验证公钥是否合法，我们需要使用证书。</p>
+<h2 id="证书公钥合法了"><a class="markdownIt-Anchor" href="#证书公钥合法了"></a> 证书——公钥合法了</h2>
+<p>证书就是我们信任的第三方对发送者的公钥加上了他们的数字签名。相当于身份证一样的东西。这里的第三方包括例如赛门铁客等机构，也可以是自己组织内部成立的一个机构。</p>
+<p>证书主要包含：</p>
+<ol>
+<li>证书序号。</li>
+<li>证书颁发机构。</li>
+<li>公钥所有者。</li>
+<li>SHA-1 指纹。</li>
+<li>MD５指纹。</li>
+<li>证书ID。</li>
+<li>有效期起始时间。</li>
+<li>有效期结束时间。</li>
+<li>散列算法。</li>
+<li>秘钥ID。</li>
+<li>秘钥用途。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>信息安全</category>
+      </categories>
+      <tags>
+        <tag>加密码技术</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>记hexo写作图片与多机器协作问题解决</title>
+    <url>/2017/%E8%AE%B0hexo%E5%86%99%E4%BD%9C%E5%9B%BE%E7%89%87%E4%B8%8E%E5%A4%9A%E6%9C%BA%E5%99%A8%E5%8D%8F%E4%BD%9C%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</url>
+    <content><![CDATA[<blockquote class="blockquote-center">
+<ol>
+<li>使用hexo进行写作，一直困扰于图片问题，不想用图床，今天尝试图片前缀使用http://username.github.io解决了使用本地图片的问题。</li>
+<li>写作的过程难免需要多台机器同时期写作，于是在github新建了一个项目专门用来存管hexo写作的工作空间，解决来多机器写作问题。</li>
+</ol>
+
+</blockquote>
+<a id="more"></a>
+<h2 id="1-hexo-写作图片问题解决"><a class="markdownIt-Anchor" href="#1-hexo-写作图片问题解决"></a> 1. Hexo 写作图片问题解决</h2>
+<p>打开配置文件　<code>_config.yml</code> 的资源文件夹属性：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">post_asset_folder: true</span><br></pre></td></tr></table></figure>
+<p>这样在source文件夹下新建目录可以当做资源文件夹，里面的文件会被发布在可供外部访问的博客系统中，于是我们在source下新建文件夹如下：<br />
+<img src="http://lighklife.github.io/img/2017/hexo_dir.png" alt="hexo文件夹目录" /><br />
+我在souce下新建了　img/2016 文件夹，然后在里面存放了一下饿图片，比如Throwable.png，这样在我的文章里面引用这张图片:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">## 3.异常有哪些种类？ ##</span><br><span class="line"></span><br><span class="line">![Java异常层次结构](http:&#x2F;&#x2F;lighklife.github.io&#x2F;img&#x2F;2016&#x2F;Throwable.png)</span><br></pre></td></tr></table></figure>
+<p>这样就可以展示在我的博客中:<br />
+<img src="http://lighklife.github.io/img/2017/hexo_use_image_example.png" alt="hexo中使用本地图片效果" /></p>
+<h2 id="2多台机器写作"><a class="markdownIt-Anchor" href="#2多台机器写作"></a> 2.多台机器写作</h2>
+<ol>
+<li>在github新建项目blog，然后clone到本地.</li>
+<li>在blog文件夹下新建文件夹lighklife作为hexo　写作的工作空间.</li>
+<li>cd到工作空间lighklife下, 使用<code>hexo init</code>初始化工作空间。</li>
+<li>回到blog文件夹下，<code>git add -f --all</code>,　让提交推送到github,这样就完成了第一次初始化。</li>
+<li>注意使用<code>git status</code>查看是否把所有的文件已经add，若没有，请单独强制add.<br />
+如此每次写作完毕只需要在blog目录下使用git 提交推送到远程，然后在另一台机器继续写作前使用git来拉取最新文件，就可以继续写作。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>工具</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用 Elastic Stack 进行日志收集与分析</title>
+    <url>/2019/%E4%BD%BF%E7%94%A8%20Elastic%20Stack%20%E8%BF%9B%E8%A1%8C%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h2 id="elastic-stack-介绍"><a class="markdownIt-Anchor" href="#elastic-stack-介绍"></a> Elastic Stack 介绍</h2>
+<h3 id="总体介绍"><a class="markdownIt-Anchor" href="#总体介绍"></a> 总体介绍</h3>
+<p>Elastic Stack 构建在开源基础之上，Elastic Stack 让您能够安全可靠地获取任何来源、任何格式的数据，并且实时地对数据进行搜索、分析和可视化。官方网站：<a href="https://www.elastic.co/cn/products/">https://www.elastic.co/cn/products/</a></p>
+<p><img src="http://lighklife.github.io/img/2019/05/Selection_001.png" alt="Elastic Stack" /></p>
+<a id="more"></a>
+<h3 id="beats-系列"><a class="markdownIt-Anchor" href="#beats-系列"></a> Beats 系列</h3>
+<p>Beats系列包含全品类采集器，可以搞定几乎所有数据类型。每款开源 Beat 都以 libbeat（转发数据时所用的通用库）为基石，当我们需要监控某个专用协议，可以在 libbeat 之上自行构建 beat。</p>
+<p><img src="http://lighklife.github.io/img/2019/05/Selection_002.png" alt="Beats 系列" /></p>
+<h2 id="总体设计"><a class="markdownIt-Anchor" href="#总体设计"></a> 总体设计</h2>
+<p><img src="http://lighklife.github.io/img/2019/05/Selection_010.png" alt="Selection_010" /></p>
+<p>每一个应用实例都会产生一个日志文件，假设每一个应用实例都部署在不同的服务器上（虚拟机/容器），那么每台服务器都需要部署一个 <a href="https://www.elastic.co/cn/products/beats/filebeat"><code>filebeat</code></a> 来实时搜集应用实例增量产生的日志，filebeat 将增量日志发送到消息队列中供 <code>Logstash</code>消费，<code>Logstash</code>对消息进行处理之后发送到 <code>Elasticsearch</code>中，再部署一个<code>Kibana</code>对 <code>Elasticsearch</code>中的日志进行可视化查询与统计。</p>
+<h2 id="filebeat-部署指南"><a class="markdownIt-Anchor" href="#filebeat-部署指南"></a> filebeat 部署指南</h2>
+<h3 id="filebeat-介绍"><a class="markdownIt-Anchor" href="#filebeat-介绍"></a> filebeat 介绍</h3>
+<p>filebeat 是一个部署在服务器上的日志搜集器，可以监控指定文件内容的变化，转发文件的增量内容到消息队列、Logstash、Elasticsearch。</p>
+<p><img src="http://lighklife.github.io/img/2019/05/Selection_011.png" alt="filebeat-works" /></p>
+<p>当filebeat启动的时候，它会检索配置文件所配置<strong>入口</strong>，然后为每一个文件启动一个 <code>harvester</code>，每一个<code>harvester</code>都会读取对应的日志文件中的增量内容，并将其发送到<code>libbeat</code>，<code>libbeat</code>会将这些内容聚集在一起发送到<code>filebeat</code>配置的<strong>出口</strong>。</p>
+<h3 id="filebeat-安装"><a class="markdownIt-Anchor" href="#filebeat-安装"></a> filebeat 安装</h3>
+<p><strong>deb:</strong></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.0.1-amd64.deb</span><br><span class="line">sudo dpkg -i filebeat-7.0.1-amd64.deb</span><br></pre></td></tr></table></figure>
+<p><strong>rpm:</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.0.1-x86_64.rpm</span><br><span class="line">sudo rpm -vi filebeat-7.0.1-x86_64.rpm</span><br></pre></td></tr></table></figure>
+<p><strong>mac:</strong></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.0.1-darwin-x86_64.tar.gz</span><br><span class="line">tar xzvf filebeat-7.0.1-darwin-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
+<p><strong>linux:</strong></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.0.1-linux-x86_64.tar.gz</span><br><span class="line">tar xzvf filebeat-7.0.1-linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
+<h3 id="filebeat-配置"><a class="markdownIt-Anchor" href="#filebeat-配置"></a> filebeat 配置</h3>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># filebeat 的输入， 每一个 - type 可以定义一个输入类型</span></span><br><span class="line"><span class="attr">filebeat.input:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">type:</span> <span class="string">log</span></span><br><span class="line">  <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">paths:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/your-log-path</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 可以自己定义标签，与日志增量内容一起推送到输出</span></span><br><span class="line"><span class="attr">tags:</span> [<span class="string">&quot;serviceName&quot;</span>, <span class="string">&quot;tag2&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义字段，与日志增量内容一起推送到输出</span></span><br><span class="line"><span class="attr">fields:</span></span><br><span class="line">  <span class="attr">ip:</span> <span class="number">192.168</span><span class="number">.0</span><span class="number">.15</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 处理器配置，可以处理加工beat搜集到的数据</span></span><br><span class="line"><span class="attr">processors:</span></span><br><span class="line">  <span class="comment"># 打开之后会将搜集到的系统信息与日志的增量内容一起发送到output</span></span><br><span class="line">  <span class="comment">#- add_host_metadata: ~</span></span><br><span class="line">  <span class="comment">#- netinfo.enabled: true</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 删除一些不需要的字段，可以大大减小数据量</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">drop_fields:</span></span><br><span class="line">      <span class="attr">fields:</span> [<span class="string">&quot;agent&quot;</span>, <span class="string">&quot;input&quot;</span>, <span class="string">&quot;logs&quot;</span>, <span class="string">&quot;ecs&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出日志增量内容到redis， 这里使用redis作为消息队列</span></span><br><span class="line"><span class="attr">output.redis:</span></span><br><span class="line">  <span class="comment"># redis 服务器IP</span></span><br><span class="line">  <span class="attr">hosts:</span> [<span class="string">&quot;192.168.0.15:7007&quot;</span>]</span><br><span class="line">  <span class="comment"># 消息队列的在redis中的key</span></span><br><span class="line">  <span class="attr">key:</span> <span class="string">&quot;redis-elk-key&quot;</span></span><br><span class="line">  <span class="attr">password:</span> <span class="string">&quot;redis-password&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="filebeat使用"><a class="markdownIt-Anchor" href="#filebeat使用"></a> filebeat使用</h3>
+<h4 id="启动与关闭"><a class="markdownIt-Anchor" href="#启动与关闭"></a> 启动与关闭</h4>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 启动</span></span><br><span class="line">service filebeat start</span><br><span class="line"><span class="comment"># 关闭</span></span><br><span class="line">service filebeat stop</span><br><span class="line"><span class="comment"># 重启</span></span><br><span class="line">service filebeat restart</span><br></pre></td></tr></table></figure>
+<p>filebeat 启动之后会有守护进程保障其安全稳定的运行，因此直接kill filebeat的进程是不能停止filebeat的，必须使用服务的方式停止。</p>
+<h4 id="状态查看"><a class="markdownIt-Anchor" href="#状态查看"></a> 状态查看</h4>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">systemctl status filebeat.service beat -l </span><br></pre></td></tr></table></figure>
+<p><img src="http://lighklife.github.io/img/2019/05/filebeat-status.png" alt="filebeat-status" /></p>
+<p>可以看到 <code>Active：</code>的状态是 <code>running</code>，表明<code>filebeat</code>已经正常启动，同时也可以看到最新搜集到的日志内容；当配置文件没有正确配置的时候，使用这个命令也可以查看出错误提示信息。</p>
+<h2 id="logstash部署指南"><a class="markdownIt-Anchor" href="#logstash部署指南"></a> Logstash部署指南</h2>
+<h3 id="logstash-介绍"><a class="markdownIt-Anchor" href="#logstash-介绍"></a> Logstash 介绍</h3>
+<p>Logstash 是开源的服务器端数据处理管道，能够：</p>
+<ul>
+<li>同时从多个来源采集数据</li>
+<li>转换数据</li>
+<li>然后将数据发送到您最喜欢的 “存储库” 中。</li>
+</ul>
+<p><strong>输入——采集各种样式、大小和来源的数据</strong></p>
+<p><img src="http://lighklife.github.io/img/2019/05/Selection_014.png" alt="logstash-input" /></p>
+<p>数据往往以各种各样的形式，或分散或集中地存在于很多系统中。 Logstash 支持 <a href="https://www.elastic.co/guide/en/logstash/current/input-plugins.html">各种输入选择</a> ，可以在同一时间从众多常用来源捕捉事件。能够以连续的流式传输方式，轻松地从您的日志、指标、Web 应用、数据存储以及各种 AWS 服务采集数据。</p>
+<p><strong>过滤器——实时解析和转换数据</strong></p>
+<p><img src="http://lighklife.github.io/img/2019/05/Selection_015.png" alt="logstash-filter" /></p>
+<p>数据从源传输到存储库的过程中，Logstash 过滤器能够解析各个事件，识别已命名的字段以构建结构，并将它们转换成通用格式，以便更轻松、更快速地分析和实现商业价值。</p>
+<ul>
+<li>利用 Grok 从非结构化数据中派生出结构</li>
+<li>从 IP 地址破译出地理坐标</li>
+<li>将 PII 数据匿名化，完全排除敏感字段</li>
+<li>简化整体处理，不受数据源、格式或架构的影响</li>
+</ul>
+<p><code>Logstash</code>的<a href="https://www.elastic.co/guide/en/logstash/current/filter-plugins.html">过滤器库</a>丰富多样，拥有无限可能。</p>
+<p><strong>输出——选择您的存储库，导出您的数据</strong></p>
+<p><img src="http://lighklife.github.io/img/2019/05/Selection_016.png" alt="logstash-output" /></p>
+<p>尽管 Elasticsearch 是我们的首选输出方向，能够为我们的搜索和分析带来无限可能，但它并非唯一选择。Logstash 提供<a href="https://www.elastic.co/guide/en/logstash/current/output-plugins.html">众多输出选择</a>，您可以将数据发送到您要指定的地方，并且能够灵活地解锁众多下游用例。</p>
+<h3 id="logstash-配置"><a class="markdownIt-Anchor" href="#logstash-配置"></a> Logstash 配置</h3>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    redis &#123;</span><br><span class="line">    	host &#x3D;&gt; &quot;192.168.0.15&quot;</span><br><span class="line">    	port &#x3D;&gt; &quot;7007&quot;</span><br><span class="line">    	password &#x3D;&gt; &quot;redis-password&quot;</span><br><span class="line">    	key &#x3D;&gt; &quot;redis-elk-key&quot;</span><br><span class="line">    	data_type &#x3D;&gt; &quot;list&quot;</span><br><span class="line">    	thread &#x3D;&gt; 5</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">filter &#123;</span><br><span class="line">	grok &#123;</span><br><span class="line">		patterns_dir &#x3D;&gt; &quot;your-patterns-dir&quot;</span><br><span class="line">		match &#x3D;&gt; &#123;</span><br><span class="line">			&quot;message&quot; &#x3D;&gt; &quot;%&#123;pattern-name&#125;&quot;</span><br><span class="line">		&#125;</span><br><span class="line">		remove_field &#x3D;&gt; [&quot;@version&quot;, &quot;message&quot;]</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &#123;</span><br><span class="line">	elasticsearch &#123;</span><br><span class="line">		index &#x3D;&gt; &quot;index-in-elasticsearch-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">		hosts &#x3D;&gt; [&quot;192.168.0.10&quot;,&quot;192.168.0.11&quot;, &quot;192.168.0.12&quot;]</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果有多个数据来源，可以使用 tag 来标识，使用 grok 进行过滤的时候再判断，依据不同的tag 做不同的处理，如下所巨之例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">	beats &#123;</span><br><span class="line">		...</span><br><span class="line">		tags &#x3D; [&quot;app_1&quot;]</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	redis &#123;</span><br><span class="line">		...</span><br><span class="line">		tags &#x3D; [&quot;app_2&quot;]</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">filter &#123;</span><br><span class="line">	if &quot;app_1&quot; in [tags] &#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	if &quot;app_2&quot; in [tags] &#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再部署调试阶段，如需要将接收到的内容实时的输出到控制台，只需要在 <code>output</code> 中加标准输出，具体如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">output &#123;</span><br><span class="line">	stdout &#123;</span><br><span class="line">		codec &#x3D;&gt; rubydebug&#123;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>框架</category>
+      </categories>
+      <tags>
+        <tag>运维</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis(一) 概述</title>
+    <url>/2019/Redis%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<h2 id="redis概述"><a class="markdownIt-Anchor" href="#redis概述"></a> Redis概述</h2>
+<h3 id="综述"><a class="markdownIt-Anchor" href="#综述"></a> 综述</h3>
+<p>Redis是一个开源（BSD许可），内存存储的数据结构服务器，可用作数据库，高速缓存和消息队列代理。它支持<a href="https://www.redis.net.cn/tutorial/3508.html">字符串</a>、<a href="https://www.redis.net.cn/tutorial/3509.html">哈希表</a>、<a href="https://www.redis.net.cn/tutorial/3510.html">列表</a>、<a href="https://www.redis.net.cn/tutorial/3511.html">集合</a>、<a href="https://www.redis.net.cn/tutorial/3512.html">有序集合</a>，<a href="https://www.redis.net.cn/tutorial/3508.html">位图</a>，<a href="https://www.redis.net.cn/tutorial/3513.html">hyperloglogs</a>等数据类型。内置复制、<a href="https://www.redis.net.cn/tutorial/3516.html">Lua脚本</a>、LRU收回、<a href="https://www.redis.net.cn/tutorial/3515.html">事务</a>以及不同级别磁盘持久化功能，同时通过Redis Sentinel提供高可用，通过Redis Cluster提供自动<a href="https://www.redis.net.cn/tutorial/3524.html">分区</a>。</p>
+<a id="more"></a>
+<h3 id="redis-使用"><a class="markdownIt-Anchor" href="#redis-使用"></a> Redis 使用</h3>
+<ul>
+<li><a href="http://www.redis.cn/commands.html">Redis命令</a> redis完整的命令列表，以及他们的说明文档。</li>
+<li><a href="http://www.redis.cn/topics/pipelining.html">管道（Pipelining）</a>：学习如何一次发送多个命令，节省往返时间。</li>
+<li><a href="http://www.redis.cn/topics/pubsub.html">Redis 发布/订阅（Pub/Sub）</a>：redis是一个快速、稳定的发布/订阅的信息系统。</li>
+<li><a href="http://www.redis.cn/commands/eval.html">Redis Lua 脚本</a>：Redis 2.6 Lua 脚本相关文档。</li>
+<li><a href="http://www.redis.cn/topics/ldb.html">Lua 脚本调试</a>：Redis 3.2 Lua 脚本调试相关文档。</li>
+<li><a href="http://www.redis.cn/topics/memory-optimization.html">内存优化</a>：了解如何使用内存和学习一些使用技巧。</li>
+<li><a href="http://www.redis.cn/commands/expire.html">过期（Expires）</a>：Redis允许为每一个key设置不同的过期时间，当它们到期时将自动从服务器上删除。</li>
+<li><a href="http://www.redis.cn/topics/lru-cache.html">将Redis当做使用LRU算法的缓存来使用</a>：如何配置并且将Redis当做缓存来使用，通过限制内存及自动回收键。</li>
+<li><a href="http://www.redis.cn/topics/transactions.html">Redis 事务</a>：将一组命令放在同一个事务中进行处理。</li>
+<li><a href="http://www.redis.cn/topics/mass-insert.html">大量插入数据</a>：如何在短时间里向Redis写入大量数据。</li>
+<li><a href="http://www.redis.cn/topics/batch-insert.html">从文件中批量插入数据</a>：将文件中的指令批量执行。</li>
+<li><a href="http://www.redis.cn/topics/partitioning.html">分区（Partitioning）</a>：如何将你的数据分布在多个Redis里面。</li>
+<li><a href="http://www.redis.cn/topics/distlock.html">分布式锁（Distributed locks）</a>：用Redis实现分布式锁管理器。</li>
+<li><a href="http://www.redis.cn/topics/notifications.html">key事件通知（Redis keyspace notifications）</a>：通过发布/订阅获得key事件的通知（版本2.8或更高）。</li>
+<li><a href="http://www.redis.cn/topics/indexes.html">创建二级索引（Creating secondary indexes with Redis）</a>：使用redis的数据结构创建二级索引。</li>
+</ul>
+<h3 id="redis-管理"><a class="markdownIt-Anchor" href="#redis-管理"></a> Redis 管理</h3>
+<ul>
+<li><a href="http://www.redis.cn/topics/rediscli.html">Redis-Cli</a>：学习怎么通过命令行使用redis。</li>
+<li><a href="http://www.redis.cn/topics/config.html">配置（Configuration）</a>：怎么配置 redis。</li>
+<li><a href="http://www.redis.cn/topics/replication.html">复制（Replication）</a>：你需要知道怎么设置主从复制。</li>
+<li><a href="http://www.redis.cn/topics/persistence.html">持久化（Persistence）</a>：了解如何配置redis的持久化。</li>
+<li><a href="http://www.redis.cn/topics/admin.html">Redis 管理（Redis Administration）</a>：学习redis管理方面的知识。</li>
+<li><a href="http://www.redis.cn/topics/security.html">安全性（Security）</a>：概述Redis的安全。</li>
+<li><a href="http://www.redis.cn/topics/encryption.html">加密（encryption）</a>：如何加密redis的客户端与服务端通信。。</li>
+<li><a href="http://www.redis.cn/topics/signals.html">信号处理（Signals Handling）</a>：如何处理Redis信号。</li>
+<li><a href="http://www.redis.cn/topics/clients.html">连接处理（Connections Handling）</a>：如何处理Redis客户端连接。</li>
+<li><a href="http://www.redis.cn/topics/sentinel.html">高可用性（High Availability）</a>：Redis Sentinel是Redis官方的高可用性解决方案。目前工作进展情况（beta阶段，积极发展），已经可用。</li>
+<li><a href="http://www.redis.cn/topics/latency-monitor.html">延迟监控（Latency monitoring）</a>：redis集成的延迟监控和报告功能对于为低延迟应用场景优化redis很有帮助。</li>
+<li><a href="http://www.redis.cn/topics/benchmarks.html">基准（Benchmarks）</a>：看看Redis在不同平台上跑得有多快。</li>
+<li><a href="http://www.redis.cn/topics/releases.html">Redis Releases</a>：Redis的开发周期和版本编号。</li>
+</ul>
+<h3 id="一点儿思考"><a class="markdownIt-Anchor" href="#一点儿思考"></a> 一点儿思考</h3>
+<p>功能多？知识点比较散乱？如何系统的学习，来建立一个完整的Redis知识树？</p>
+<p>我们可以按照事物发展的逻辑顺序来进行逐渐“消化”Redis：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">graph LR;</span><br><span class="line"></span><br><span class="line">数据结构与对象 --&gt; 单机数据库的实现</span><br><span class="line">单机数据库的实现 --&gt; 多机数据库的实现</span><br><span class="line">多机数据库的实现 --&gt; 其他独立功能的实现</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="redis-命令"><a class="markdownIt-Anchor" href="#redis-命令"></a> Redis 命令</h2>
+<h3 id="redis-键key-命令"><a class="markdownIt-Anchor" href="#redis-键key-命令"></a> Redis 键(key) 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3543.html">Redis Type 命令</a></td>
+<td style="text-align:left">返回 key 所储存的值的类型。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3533.html">Redis PEXPIREAT 命令</a></td>
+<td style="text-align:left">设置 key 的过期时间亿以毫秒计。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3534.html">Redis PEXPIREAT 命令</a></td>
+<td style="text-align:left">设置 key 过期时间的时间戳(unix timestamp) 以毫秒计</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3541.html">Redis Rename 命令</a></td>
+<td style="text-align:left">修改 key 的名称</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3537.html">Redis PERSIST 命令</a></td>
+<td style="text-align:left">移除 key 的过期时间，key 将持久保持。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3536.html">Redis Move 命令</a></td>
+<td style="text-align:left">将当前数据库的 key 移动到给定的数据库 db 当中。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3540.html">Redis RANDOMKEY 命令</a></td>
+<td style="text-align:left">从当前数据库中随机返回一个 key 。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3529.html">Redis Dump 命令</a></td>
+<td style="text-align:left">序列化给定 key ，并返回被序列化的值。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3539.html">Redis TTL 命令</a></td>
+<td style="text-align:left">以秒为单位，返回给定 key 的剩余生存时间(TTL, time to live)。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3531.html">Redis Expire 命令</a></td>
+<td style="text-align:left">seconds 为给定 key 设置过期时间。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3528.html">Redis DEL 命令</a></td>
+<td style="text-align:left">该命令用于在 key 存在是删除 key。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3538.html">Redis Pttl 命令</a></td>
+<td style="text-align:left">以毫秒为单位返回 key 的剩余的过期时间。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3542.html">Redis Renamenx 命令</a></td>
+<td style="text-align:left">仅当 newkey 不存在时，将 key 改名为 newkey 。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3530.html">Redis EXISTS 命令</a></td>
+<td style="text-align:left">检查给定 key 是否存在。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3532.html">Redis Expireat 命令</a></td>
+<td style="text-align:left">EXPIREAT 的作用和 EXPIRE 类似，都用于为 key 设置过期时间。 不同在于 EXPIREAT 命令接受的时间参数是 UNIX 时间戳(unix timestamp)。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3535.html">Redis Keys 命令</a></td>
+<td style="text-align:left">查找所有符合给定模式( pattern)的 key 。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-字符串string-命令"><a class="markdownIt-Anchor" href="#redis-字符串string-命令"></a> Redis 字符串(String) 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3552.html">Redis Setnx 命令</a></td>
+<td style="text-align:left">只有在 key 不存在时设置 key 的值。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3546.html">Redis Getrange 命令</a></td>
+<td style="text-align:left">返回 key 中字符串值的子字符</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3555.html">Redis Mset 命令</a></td>
+<td style="text-align:left">同时设置一个或多个 key-value 对。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3551.html">Redis Setex 命令</a></td>
+<td style="text-align:left">将值 value 关联到 key ，并将 key 的过期时间设为 seconds (以秒为单位)。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3544.html">Redis SET 命令</a></td>
+<td style="text-align:left">设置指定 key 的值</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3545.html">Redis Get 命令</a></td>
+<td style="text-align:left">获取指定 key 的值。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3548.html">Redis Getbit 命令</a></td>
+<td style="text-align:left">对 key 所储存的字符串值，获取指定偏移量上的位(bit)。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3550.html">Redis Setbit 命令</a></td>
+<td style="text-align:left">对 key 所储存的字符串值，设置或清除指定偏移量上的位(bit)。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3561.html">Redis Decr 命令</a></td>
+<td style="text-align:left">将 key 中储存的数字值减一。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3562.html">Redis Decrby 命令</a></td>
+<td style="text-align:left">key 所储存的值减去给定的减量值（decrement） 。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3554.html">Redis Strlen 命令</a></td>
+<td style="text-align:left">返回 key 所储存的字符串值的长度。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3556.html">Redis Msetnx 命令</a></td>
+<td style="text-align:left">同时设置一个或多个 key-value 对，当且仅当所有给定 key 都不存在。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3559.html">Redis Incrby 命令</a></td>
+<td style="text-align:left">将 key 所储存的值加上给定的增量值（increment） 。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3560.html">Redis Incrbyfloat 命令</a></td>
+<td style="text-align:left">将 key 所储存的值加上给定的浮点增量值（increment） 。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3553.html">Redis Setrange 命令</a></td>
+<td style="text-align:left">用 value 参数覆写给定 key 所储存的字符串值，从偏移量 offset 开始。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3557.html">Redis Psetex 命令</a></td>
+<td style="text-align:left">这个命令和 SETEX 命令相似，但它以毫秒为单位设置 key 的生存时间，而不是像 SETEX 命令那样，以秒为单位。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3563.html">Redis Append 命令</a></td>
+<td style="text-align:left">如果 key 已经存在并且是一个字符串， APPEND 命令将 value 追加到 key 原来的值的末尾。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3547.html">Redis Getset 命令</a></td>
+<td style="text-align:left">将给定 key 的值设为 value ，并返回 key 的旧值(old value)。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3549.html">Redis Mget 命令</a></td>
+<td style="text-align:left">获取所有(一个或多个)给定 key 的值。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3558.html">Redis Incr 命令</a></td>
+<td style="text-align:left">将 key 中储存的数字值增一。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-列表list-命令"><a class="markdownIt-Anchor" href="#redis-列表list-命令"></a> Redis 列表(List) 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3580.html">Redis Lindex 命令</a></td>
+<td style="text-align:left">通过索引获取列表中的元素</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3592.html">Redis Rpush 命令</a></td>
+<td style="text-align:left">在列表中添加一个或多个值</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3586.html">Redis Lrange 命令</a></td>
+<td style="text-align:left">获取列表指定范围内的元素</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3591.html">Redis Rpoplpush 命令</a></td>
+<td style="text-align:left">移除列表的最后一个元素，并将该元素添加到另一个列表并返回</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3577.html">Redis Blpop 命令</a></td>
+<td style="text-align:left">移出并获取列表的第一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3578.html">Redis Brpop 命令</a></td>
+<td style="text-align:left">移出并获取列表的最后一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3579.html">Redis Brpoplpush 命令</a></td>
+<td style="text-align:left">从列表中弹出一个值，将弹出的元素插入到另外一个列表中并返回它； 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3587.html">Redis Lrem 命令</a></td>
+<td style="text-align:left">移除列表元素</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3582.html">Redis Llen 命令</a></td>
+<td style="text-align:left">获取列表长度</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3589.html">Redis Ltrim 命令</a></td>
+<td style="text-align:left">对一个列表进行修剪(trim)，就是说，让列表只保留指定区间内的元素，不在指定区间之内的元素都将被删除。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3583.html">Redis Lpop 命令</a></td>
+<td style="text-align:left">移出并获取列表的第一个元素</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3585.html">Redis Lpushx 命令</a></td>
+<td style="text-align:left">将一个或多个值插入到已存在的列表头部</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3581.html">Redis Linsert 命令</a></td>
+<td style="text-align:left">在列表的元素前或者后插入元素</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3590.html">Redis Rpop 命令</a></td>
+<td style="text-align:left">移除并获取列表最后一个元素</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3588.html">Redis Lset 命令</a></td>
+<td style="text-align:left">通过索引设置列表元素的值</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3584.html">Redis Lpush 命令</a></td>
+<td style="text-align:left">将一个或多个值插入到列表头部</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3593.html">Redis Rpushx 命令</a></td>
+<td style="text-align:left">为已存在的列表添加值</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-哈希hash-命令"><a class="markdownIt-Anchor" href="#redis-哈希hash-命令"></a> Redis 哈希(Hash) 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3573.html">Redis Hmset 命令</a></td>
+<td style="text-align:left">同时将多个 field-value (域-值)对设置到哈希表 key 中。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3572.html">Redis Hmget 命令</a></td>
+<td style="text-align:left">获取所有给定字段的值</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3574.html">Redis Hset 命令</a></td>
+<td style="text-align:left">将哈希表 key 中的字段 field 的值设为 value 。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3567.html">Redis Hgetall 命令</a></td>
+<td style="text-align:left">获取在哈希表中指定 key 的所有字段和值</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3566.html">Redis Hget 命令</a></td>
+<td style="text-align:left">获取存储在哈希表中指定字段的值/td&gt;</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3565.html">Redis Hexists 命令</a></td>
+<td style="text-align:left">查看哈希表 key 中，指定的字段是否存在。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3568.html">Redis Hincrby 命令</a></td>
+<td style="text-align:left">为哈希表 key 中的指定字段的整数值加上增量 increment 。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3571.html">Redis Hlen 命令</a></td>
+<td style="text-align:left">获取哈希表中字段的数量</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3564.html">Redis Hdel 命令</a></td>
+<td style="text-align:left">删除一个或多个哈希表字段</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3576.html">Redis Hvals 命令</a></td>
+<td style="text-align:left">获取哈希表中所有值</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3569.html">Redis Hincrbyfloat 命令</a></td>
+<td style="text-align:left">为哈希表 key 中的指定字段的浮点数值加上增量 increment 。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3570.html">Redis Hkeys 命令</a></td>
+<td style="text-align:left">获取所有哈希表中的字段</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3575.html">Redis Hsetnx 命令</a></td>
+<td style="text-align:left">只有在字段 field 不存在时，设置哈希表字段的值。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-集合set-命令"><a class="markdownIt-Anchor" href="#redis-集合set-命令"></a> Redis 集合(Set) 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3606.html">Redis Sunion 命令</a></td>
+<td style="text-align:left">返回所有给定集合的并集</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3595.html">Redis Scard 命令</a></td>
+<td style="text-align:left">获取集合的成员数</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3604.html">Redis Srandmember 命令</a></td>
+<td style="text-align:left">返回集合中一个或多个随机数</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3601.html">Redis Smembers 命令</a></td>
+<td style="text-align:left">返回集合中的所有成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3598.html">Redis Sinter 命令</a></td>
+<td style="text-align:left">返回给定所有集合的交集</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3605.html">Redis Srem 命令</a></td>
+<td style="text-align:left">移除集合中一个或多个成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3602.html">Redis Smove 命令</a></td>
+<td style="text-align:left">将 member 元素从 source 集合移动到 destination 集合</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3594.html">Redis Sadd 命令</a></td>
+<td style="text-align:left">向集合添加一个或多个成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3600.html">Redis Sismember 命令</a></td>
+<td style="text-align:left">判断 member 元素是否是集合 key 的成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3597.html">Redis Sdiffstore 命令</a></td>
+<td style="text-align:left">返回给定所有集合的差集并存储在 destination 中</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3596.html">Redis Sdiff 命令</a></td>
+<td style="text-align:left">返回给定所有集合的差集</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3608.html">Redis Sscan 命令</a></td>
+<td style="text-align:left">迭代集合中的元素</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3599.html">Redis Sinterstore 命令</a></td>
+<td style="text-align:left">返回给定所有集合的交集并存储在 destination 中</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3607.html">Redis Sunionstore 命令</a></td>
+<td style="text-align:left">所有给定集合的并集存储在 destination 集合中</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3603.html">Redis Spop 命令</a></td>
+<td style="text-align:left">移除并返回集合中的一个随机元素</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-有序集合sorted-set-命令"><a class="markdownIt-Anchor" href="#redis-有序集合sorted-set-命令"></a> Redis 有序集合(sorted set) 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3625.html">Redis Zrevrank 命令</a></td>
+<td style="text-align:left">返回有序集合中指定成员的排名，有序集成员按分数值递减(从大到小)排序</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3614.html">Redis Zlexcount 命令</a></td>
+<td style="text-align:left">在有序集合中计算指定字典区间内成员数量</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3627.html">Redis Zunionstore 命令</a></td>
+<td style="text-align:left">计算给定的一个或多个有序集的并集，并存储在新的 key 中</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3621.html">Redis Zremrangebyrank 命令</a></td>
+<td style="text-align:left">移除有序集合中给定的排名区间的所有成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3610.html">Redis Zcard 命令</a></td>
+<td style="text-align:left">获取有序集合的成员数</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3619.html">Redis Zrem 命令</a></td>
+<td style="text-align:left">移除有序集合中的一个或多个成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3613.html">Redis Zinterstore 命令</a></td>
+<td style="text-align:left">计算给定的一个或多个有序集的交集并将结果集存储在新的有序集合 key 中</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3618.html">Redis Zrank 命令</a></td>
+<td style="text-align:left">返回有序集合中指定成员的索引</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3612.html">Redis Zincrby 命令</a></td>
+<td style="text-align:left">有序集合中对指定成员的分数加上增量 increment</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3617.html">Redis Zrangebyscore 命令</a></td>
+<td style="text-align:left">通过分数返回有序集合指定区间内的成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3616.html">Redis Zrangebylex 命令</a></td>
+<td style="text-align:left">通过字典区间返回有序集合的成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3626.html">Redis Zscore 命令</a></td>
+<td style="text-align:left">返回有序集中，成员的分数值</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3622.html">Redis Zremrangebyscore 命令</a></td>
+<td style="text-align:left">移除有序集合中给定的分数区间的所有成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3628.html">Redis Zscan 命令</a></td>
+<td style="text-align:left">迭代有序集合中的元素（包括元素成员和元素分值）</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3624.html">Redis Zrevrangebyscore 命令</a></td>
+<td style="text-align:left">返回有序集中指定分数区间内的成员，分数从高到低排序</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3620.html">Redis Zremrangebylex 命令</a></td>
+<td style="text-align:left">移除有序集合中给定的字典区间的所有成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3623.html">Redis Zrevrange 命令</a></td>
+<td style="text-align:left">返回有序集中指定区间内的成员，通过索引，分数从高到底</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3615.html">Redis Zrange 命令</a></td>
+<td style="text-align:left">通过索引区间返回有序集合成指定区间内的成员</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3611.html">Redis Zcount 命令</a></td>
+<td style="text-align:left">计算在有序集合中指定区间分数的成员数</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3609.html">Redis Zadd 命令</a></td>
+<td style="text-align:left">向有序集合添加一个或多个成员，或者更新已存在成员的分数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-连接-命令"><a class="markdownIt-Anchor" href="#redis-连接-命令"></a> Redis 连接 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3650.html">Redis Echo 命令</a></td>
+<td style="text-align:left">打印字符串</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3653.html">Redis Select 命令</a></td>
+<td style="text-align:left">切换到指定的数据库</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3651.html">Redis Ping 命令</a></td>
+<td style="text-align:left">查看服务是否运行</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3652.html">Redis Quit 命令</a></td>
+<td style="text-align:left">关闭当前连接</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3649.html">Redis Auth 命令</a></td>
+<td style="text-align:left">验证密码是否正确</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-服务器-命令"><a class="markdownIt-Anchor" href="#redis-服务器-命令"></a> Redis 服务器 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3659.html">Redis Client Pause 命令</a></td>
+<td style="text-align:left">在指定时间内终止运行来自客户端的命令</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3672.html">Redis Debug Object 命令</a></td>
+<td style="text-align:left">获取 key 的调试信息</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3675.html">Redis Flushdb 命令</a></td>
+<td style="text-align:left">删除当前数据库的所有key</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3680.html">Redis Save 命令</a></td>
+<td style="text-align:left">异步保存数据到硬盘</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3683.html">Redis Showlog 命令</a></td>
+<td style="text-align:left">管理 redis 的慢日志</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3677.html">Redis Lastsave 命令</a></td>
+<td style="text-align:left">返回最近一次 Redis 成功将数据保存到磁盘上的时间，以 UNIX 时间戳格式表示</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3667.html">Redis Config Get 命令</a></td>
+<td style="text-align:left">获取指定配置参数的值</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3662.html">Redis Command 命令</a></td>
+<td style="text-align:left">获取 Redis 命令详情数组</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3682.html">Redis Slaveof 命令</a></td>
+<td style="text-align:left">将当前服务器转变为指定服务器的从属服务器(slave server)</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3673.html">Redis Debug Segfault 命令</a></td>
+<td style="text-align:left">让 Redis 服务崩溃</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3674.html">Redis Flushall 命令</a></td>
+<td style="text-align:left">删除所有数据库的所有key</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3671.html">Redis Dbsize 命令</a></td>
+<td style="text-align:left">返回当前数据库的 key 的数量</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3654.html">Redis Bgrewriteaof 命令</a></td>
+<td style="text-align:left">异步执行一个 AOF（AppendOnly File） 文件重写操作</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3661.html">Redis Cluster Slots 命令</a></td>
+<td style="text-align:left">获取集群节点的映射数组</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3669.html">Redis Config Set 命令</a></td>
+<td style="text-align:left">修改 redis 配置参数，无需重启</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3666.html">Redis Command Info 命令</a></td>
+<td style="text-align:left">获取指定 Redis 命令描述的数组</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3681.html">Redis Shutdown 命令</a></td>
+<td style="text-align:left">异步保存数据到硬盘，并关闭服务器</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3684.html">Redis Sync 命令</a></td>
+<td style="text-align:left">用于复制功能(replication)的内部命令</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3656.html">Redis Client Kill 命令</a></td>
+<td style="text-align:left">关闭客户端连接</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3679.html">Redis Role 命令</a></td>
+<td style="text-align:left">返回主从实例所属的角色</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3678.html">Redis Monitor 命令</a></td>
+<td style="text-align:left">实时打印出 Redis 服务器接收到的命令，调试用</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3664.html">Redis Command Getkeys 命令</a></td>
+<td style="text-align:left">获取给定命令的所有键</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3658.html">Redis Client Getname 命令</a></td>
+<td style="text-align:left">获取连接的名称</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3670.html">Redis Config Resetstat 命令</a></td>
+<td style="text-align:left">重置 INFO 命令中的某些统计数据</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3663.html">Redis Command Count 命令</a></td>
+<td style="text-align:left">获取 Redis 命令总数</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3665.html">Redis Time 命令</a></td>
+<td style="text-align:left">返回当前服务器时间</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3676.html">Redis Info 命令</a></td>
+<td style="text-align:left">获取 Redis 服务器的各种信息和统计数值</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3668.html">Redis Config rewrite 命令</a></td>
+<td style="text-align:left">对启动 Redis 服务器时所指定的 redis.conf 配置文件进行改写</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3657.html">Redis Client List 命令</a></td>
+<td style="text-align:left">获取连接到服务器的客户端连接列表</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3660.html">Redis Client Setname 命令</a></td>
+<td style="text-align:left">设置当前连接的名称</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3655.html">Redis Bgsave 命令</a></td>
+<td style="text-align:left">在后台异步保存当前数据库的数据到磁盘</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-脚本-命令"><a class="markdownIt-Anchor" href="#redis-脚本-命令"></a> Redis 脚本 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3647.html">Redis Script kill 命令</a></td>
+<td style="text-align:left">杀死当前正在运行的 Lua 脚本。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3648.html">Redis Script Load 命令</a></td>
+<td style="text-align:left">将脚本 script 添加到脚本缓存中，但并不立即执行这个脚本。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3643.html">Redis Eval 命令</a></td>
+<td style="text-align:left">执行 Lua 脚本。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3644.html">Redis Evalsha 命令</a></td>
+<td style="text-align:left">执行 Lua 脚本。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3645.html">Redis Script Exists 命令</a></td>
+<td style="text-align:left">查看指定的脚本是否已经被保存在缓存当中。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3646.html">Redis Script Flush 命令</a></td>
+<td style="text-align:left">从脚本缓存中移除所有脚本。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-事务-命令"><a class="markdownIt-Anchor" href="#redis-事务-命令"></a> Redis 事务 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3639.html">Redis Exec 命令</a></td>
+<td style="text-align:left">执行所有事务块内的命令。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3642.html">Redis Watch 命令</a></td>
+<td style="text-align:left">监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3638.html">Redis Discard 命令</a></td>
+<td style="text-align:left">取消事务，放弃执行事务块内的所有命令。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3641.html">Redis Unwatch 命令</a></td>
+<td style="text-align:left">取消 WATCH 命令对所有 key 的监视。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3640.html">Redis Multi 命令</a></td>
+<td style="text-align:left">标记一个事务块的开始。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-hyperloglog-命令"><a class="markdownIt-Anchor" href="#redis-hyperloglog-命令"></a> Redis HyperLogLog 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3631.html">Redis Pgmerge 命令</a></td>
+<td style="text-align:left">将多个 HyperLogLog 合并为一个 HyperLogLog</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3629.html">Redis Pfadd 命令</a></td>
+<td style="text-align:left">添加指定元素到 HyperLogLog 中。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3630.html">Redis Pfcount 命令</a></td>
+<td style="text-align:left">返回给定 HyperLogLog 的基数估算值。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-发布订阅-命令"><a class="markdownIt-Anchor" href="#redis-发布订阅-命令"></a> Redis 发布订阅 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3637.html">Redis Unsubscribe 命令</a></td>
+<td style="text-align:left">指退订给定的频道。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3636.html">Redis Subscribe 命令</a></td>
+<td style="text-align:left">订阅给定的一个或多个频道的信息。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3633.html">Redis Pubsub 命令</a></td>
+<td style="text-align:left">查看订阅与发布系统状态。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3635.html">Redis Punsubscribe 命令</a></td>
+<td style="text-align:left">退订所有给定模式的频道。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3634.html">Redis Publish 命令</a></td>
+<td style="text-align:left">将信息发送到指定的频道。</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3632.html">Redis Psubscribe 命令</a></td>
+<td style="text-align:left">订阅一个或多个符合给定模式的频道。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-地理位置geo-命令"><a class="markdownIt-Anchor" href="#redis-地理位置geo-命令"></a> Redis 地理位置(geo) 命令</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3687.html">Redis GEOHASH 命令</a></td>
+<td style="text-align:left">返回一个或多个位置元素的 Geohash 表示</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3688.html">Redis GEOPOS 命令</a></td>
+<td style="text-align:left">从key里返回所有给定位置元素的位置（经度和纬度）</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3686.html">Redis GEODIST 命令</a></td>
+<td style="text-align:left">返回两个给定位置之间的距离</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3689.html">Redis GEORADIUS 命令</a></td>
+<td style="text-align:left">以给定的经纬度为中心， 找出某一半径内的元素</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3685.html">Redis GEOADD 命令</a></td>
+<td style="text-align:left">将指定的地理空间位置（纬度、经度、名称）添加到指定的key中</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.redis.net.cn/order/3690.html">Redis GEORADIUSBYMEMBER 命令</a></td>
+<td style="text-align:left">找出位于指定范围内的元素，中心点是由给定的位置元素决定</td>
+</tr>
+</tbody>
+</table>
+<h3 id="一点儿思考-2"><a class="markdownIt-Anchor" href="#一点儿思考-2"></a> 一点儿思考</h3>
+<p>命令太多，太杂，记不住？</p>
+<p>答：按照人类记忆的特性——找规律规律来记忆</p>
+<p>有更好的方式吗？</p>
+<p>答：按照其数据结构的常用操作方式来记忆</p>
+<p>记住这些命令就可以了吗？</p>
+<p>答：非也，基于Redis数据对象的实现原理，不同命令执行的时间复杂度是不同的，我们需要了解其原理才能更好的使用这些命令。</p>
+<p>Redis的三种境界：</p>
+<ol>
+<li>提供了那些功能特性？——认识Redis</li>
+<li>使用Redis辅助业务开发——和Redis一起耍朋友</li>
+<li>学习Redis的功能的实现原理——与Redis成为灵魂伴侣</li>
+</ol>
+<h2 id="redis-数据对象介绍"><a class="markdownIt-Anchor" href="#redis-数据对象介绍"></a> Redis 数据对象介绍</h2>
+<h3 id="数据对象与原生数据结构的关系"><a class="markdownIt-Anchor" href="#数据对象与原生数据结构的关系"></a> 数据对象与原生数据结构的关系</h3>
+<p>schema 所对应的db仅以编号区分。同一个db 内，key 作为顶层模型，它的值是扁平化的，也就是说db 就是key的命名空间。<br />
+key的定义通常以“:” 分隔，如：Article:Count:1<br />
+我们常用的Redis数据类型有：string、list、set、map、sorted-set</p>
+<p><img src="https://uploadfiles.nowcoder.com/files/20190319/5088755_1553003943115_4685968-a070dea113eaf8d1.png" alt="img" /></p>
+<h3 id="数据对象结构"><a class="markdownIt-Anchor" href="#数据对象结构"></a> 数据对象结构</h3>
+<p>Redis中的所有value 都是以object 的形式存在的，其通用结构如下</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisObject</span> &#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span> [type] <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> [encoding] <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> [lru] REDIS_LRU_BITS;</span><br><span class="line">    <span class="keyword">int</span> refcount;</span><br><span class="line">    <span class="keyword">void</span> *ptr;</span><br><span class="line">&#125; robj;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>type 指的是前面提到的 string、list 等类型</li>
+<li>encoding 指的是这些结构化类型具体的实现方式，同一个类型可以有多种实现<br />
+e.g. string 可以用int 来实现，也可以使用char[] 来实现；list 可以用ziplist 或者链表来实现</li>
+<li>lru 表示本对象的空转时长，用于有限内存下长时间不访问的对象清理</li>
+<li>refcount 对象引用计数，用于GC</li>
+<li>ptr 指向以encoding 方式实现这个对象实际实现者的地址<br />
+如：string 对象对应的SDS地址（string的数据结构/简单动态字符串）</li>
+</ul>
+<p><img src="https://uploadfiles.nowcoder.com/files/20190319/5088755_1553003942847_4685968-ded4822f6e1bfa8c.png" alt="img" /></p>
+]]></content>
+      <categories>
+        <category>框架</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+</search>
